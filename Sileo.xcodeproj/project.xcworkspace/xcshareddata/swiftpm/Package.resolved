@@ -3,10 +3,10 @@
     "pins": [
       {
         "package": "Alderis",
-        "repositoryURL": "https://github.com/elihwyma/Alderis.git",
+        "repositoryURL": "https://github.com/waruhachi/Alderis",
         "state": {
-          "branch": "master",
-          "revision": "95030bfc6afc5d58a22aaa013e0f4c77317b57a1",
+          "branch": "main",
+          "revision": "191f1900857267853f6fe249c65506ef791aee91",
           "version": null
         }
       },
@@ -32,7 +32,7 @@
         "package": "Evander",
         "repositoryURL": "https://github.com/elihwyma/Evander",
         "state": {
-          "branch": null,
+          "branch": "main",
           "revision": "0059e74d91e8574bee454e748ea6cc188e8b43db",
           "version": null
         }
@@ -48,10 +48,10 @@
       },
       {
         "package": "LNPopupController",
-        "repositoryURL": "https://github.com/elihwyma/LNPopupController",
+        "repositoryURL": "https://github.com/waruhachi/LNPopupController",
         "state": {
-          "branch": null,
-          "revision": "6cdb4a977b8e0253305cd5009e33028d90631788",
+          "branch": "master",
+          "revision": "ccaffcf7f78250fa99b428b2910d2ca7f9e03eac",
           "version": null
         }
       },
@@ -78,8 +78,17 @@
         "repositoryURL": "https://github.com/stephencelis/SQLite.swift.git",
         "state": {
           "branch": null,
-          "revision": "a95fc6df17d108bd99210db5e8a9bac90fe984b8",
-          "version": "0.15.3"
+          "revision": "392dd6058624d9f6c5b4c769d165ddd8c7293394",
+          "version": "0.15.4"
+        }
+      },
+      {
+        "package": "swift-toolchain-sqlite",
+        "repositoryURL": "https://github.com/swiftlang/swift-toolchain-sqlite",
+        "state": {
+          "branch": null,
+          "revision": "b626d3002773b1a1304166643e7f118f724b2132",
+          "version": "1.0.4"
         }
       },
       {

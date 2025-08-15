@@ -32,13 +32,12 @@
             <Locations>
                <Location
                   uuid = "14211DF2-EC10-46F8-B845-3EF6C3966462 - d678e86d6b527609"
-                  shouldBeEnabled = "Yes"
+                  shouldBeEnabled = "No"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "-[UIViewController dealloc]"
                   moduleName = "UIKitCore"
-                  usesParentBreakpointCondition = "Yes"
-                  offsetFromSymbolStart = "0">
+                  usesParentBreakpointCondition = "Yes">
                </Location>
             </Locations>
          </BreakpointContent>

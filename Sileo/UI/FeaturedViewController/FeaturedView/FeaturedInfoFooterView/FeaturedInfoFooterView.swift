@@ -39,8 +39,10 @@ class FeaturedInfoFooterView: FeaturedBaseView {
                 sileoVersion = "Unknown"
             }
         }
+        
+        let Rootless: Bool = !CommandPath.prefix.isEmpty
 
-        label.text = "\(platform) • \(systemPlatform) \(systemVersion) • Sileo \(sileoVersion)\n\(Jailbreak.current.rawValue) • \(Jailbreak.bootstrap.rawValue)"
+        label.text = "\(platform) • \(systemPlatform) \(systemVersion) • Sileo \(sileoVersion)\n\(Jailbreak.current.rawValue) • \(Jailbreak.bootstrap.rawValue) \(Rootless ? "(Rootless)" : "")"
         label.font = UIFont.systemFont(ofSize: 12)
         label.textColor = .lightGray
         label.numberOfLines = 3

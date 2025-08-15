@@ -103,21 +103,15 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
         }
         
         popupIsPresented = true
-        self.popupContentView.popupCloseButtonAutomaticallyUnobstructsTopBars = false
-        self.popupBar.toolbar.tag = WHITE_BLUR_TAG
         self.popupBar.barStyle = .prominent
+        self.popupBar.progressViewStyle = .bottom
+        self.popupInteractionStyle = .drag
         
         self.updateSileoColors()
         
-        self.popupBar.toolbar.setBackgroundImage(nil, forToolbarPosition: .any, barMetrics: .default)
-        self.popupBar.tabBarHeight = self.tabBar.frame.height
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            self.popupBar.isInlineWithTabBar = true
-            self.popupBar.tabBarHeight += 1
-        }
         self.popupBar.progressViewStyle = .bottom
         self.popupInteractionStyle = .drag
-        self.presentPopupBar(withContentViewController: downloadsController, animated: true, completion: completion)
+        self.presentPopupBar(with: downloadsController, animated: true)
         
         self.updateSileoColors()
     }
@@ -134,13 +128,19 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
             return
         }
         
-        popupLock.wait()
-        defer {
-            popupLock.signal()
+        DispatchQueue.global(qos: .userInitiated).async {
+            self.popupLock.wait()
+
+            DispatchQueue.main.async {
+                self.popupIsPresented = false
+                self.dismissPopupBar(animated: true) {
+                    self.popupLock.signal()
+                    if let completion = completion {
+                        completion()
+                    }
+                }
+            }
         }
-        
-        popupIsPresented = false
-        self.dismissPopupBar(animated: true, completion: completion)
     }
     
     func presentPopupController() {
@@ -262,13 +262,7 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
     }
     
     @objc func updateSileoColors() {
-        if UIColor.isDarkModeEnabled {
-            self.popupBar.systemBarStyle = .black
-            self.popupBar.toolbar.barStyle = .black
-        } else {
-            self.popupBar.systemBarStyle = .default
-            self.popupBar.toolbar.barStyle = .default
-        }
+        self.popupBar.barStyle = .default
     }
     
     override func viewDidLayoutSubviews() {
@@ -276,7 +270,9 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
         
         self.tabBar.itemPositioning = .centered
         if UIDevice.current.userInterfaceIdiom == .pad {
-            self.updatePopup()
+            if self.view.frame.width >= 768 || UIDevice.current.orientation.isPortrait {
+                self.updatePopup()
+            }
         }
     }
     

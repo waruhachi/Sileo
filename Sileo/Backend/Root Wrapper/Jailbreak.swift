@@ -49,6 +49,7 @@ enum Jailbreak: String, Codable {
     /// Fugu15
     case fugu15 =            "Fugu15"
     case dopamine =          "Dopamine"
+    case nekojb =            "nekoJB"
     
     case mac =               "macOS"
     case other =             "Unknown Jailbreak"
