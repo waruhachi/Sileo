@@ -69,10 +69,11 @@ final class Package: PackageProtocol {
     }
     
     var sourceRepo: Repo? {
-        guard let sourceFileSafe = sourceFile else {
-            return nil
+        if let sourceFileSafe = sourceFile {
+            return RepoManager.shared.repo(withSourceFile: sourceFileSafe)
         }
-        return RepoManager.shared.repo(withSourceFile: sourceFileSafe)
+        
+        return RepoManager.shared.repoList.first { $0.packageDict[packageID] != nil }
     }
     
     var guid: String {

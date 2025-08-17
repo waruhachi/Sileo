@@ -35,7 +35,9 @@ class PackageCollectionViewCell: SwipeCollectionViewCell {
         didSet {
             if let targetPackage = targetPackage {
                 titleLabel?.text = targetPackage.name
-                authorLabel?.text = "\(targetPackage.author?.name ?? "Unknown") • \(targetPackage.version)"
+                let repoDisplay = targetPackage.sourceRepo?.displayName ?? targetPackage.source?.host ?? ""
+                let versionAndRepo = repoDisplay.isEmpty ? "\(targetPackage.version)" : "\(targetPackage.version) • \(repoDisplay)"
+                authorLabel?.text = "\(targetPackage.author?.name ?? "Unknown") • \(versionAndRepo)"
                 descriptionLabel?.text = targetPackage.packageDescription
                 
                 let url = targetPackage.icon
@@ -56,7 +58,9 @@ class PackageCollectionViewCell: SwipeCollectionViewCell {
         didSet {
             if let provisionalTarget = provisionalTarget {
                 titleLabel?.text = provisionalTarget.name ?? ""
-                authorLabel?.text = "\(provisionalTarget.author?.name ?? "") • \(provisionalTarget.version)"
+                let repoDisplay = provisionalTarget.repository.uri.host ?? provisionalTarget.repository.slug
+                let versionAndRepo = "\(provisionalTarget.version) • \(repoDisplay)"
+                authorLabel?.text = "\(provisionalTarget.author?.name ?? "") • \(versionAndRepo)"
                 descriptionLabel?.text = provisionalTarget.description
             
                 let url = provisionalTarget.icon
