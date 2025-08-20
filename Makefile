@@ -119,7 +119,7 @@ MAKEFLAGS += --no-print-directory
 export EXPANDED_CODE_SIGN_IDENTITY =
 export EXPANDED_CODE_SIGN_IDENTITY_NAME =
 
-STRIP = xcrun strip
+STRIP = xcrun strip -x
 
 ifneq ($(MAC), 1)
 export PRODUCT_BUNDLE_IDENTIFIER = "org.coolstar.SileoStore"
