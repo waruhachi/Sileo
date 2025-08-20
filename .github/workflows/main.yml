@@ -2,47 +2,22 @@ on:
   push:
     branches:
       - main
+
 name: Build
 jobs:
   make:
     name: Build and Upload Sileo
-    runs-on: macos-12
+    runs-on: macos-latest
     steps:
-
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v5
         with:
           submodules: recursive
-          token: ${{ secrets.SILEO_PAT }}
-      - name: Import all certificates
-        env:
-          DEVELOPMENT_PASSWORD: ${{ secrets.DEVELOPMENT_PASSWORD }}
-          DEVELOPMENT_CERTIFICATE: ${{ secrets.DEVELOPMENT_CERTIFICATE }}
-          DISTRIBUTION_CERTIFICATE: ${{ secrets.DISTRIBUTION_CERTIFICATE }}
-          DISTRIBUTION_PASSWORD: ${{ secrets.DISTRIBUTION_PASSWORD }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-        run: |
-          security create-keychain -p "" build.keychain
-          security list-keychains -s build.keychain
-          security default-keychain -s build.keychain
-          security unlock-keychain -p "" build.keychain
-          security set-keychain-settings
-          security import <(echo $DEVELOPMENT_CERTIFICATE | base64 --decode) \
-                          -f pkcs12 \
-                          -k build.keychain \
-                          -P $DEVELOPMENT_PASSWORD \
-                          -T /usr/bin/codesign
-          security import <(echo $DISTRIBUTION_CERTIFICATE | base64 --decode) \
-                          -f pkcs12 \
-                          -k build.keychain \
-                          -P $DISTRIBUTION_PASSWORD \
-                          -T /usr/bin/codesign
-          security set-key-partition-list -S apple-tool:,apple: -s -k "" build.keychain
 
       - name: Setup Procursus Bootstrap (install)
         run: |
-          wget https://apt.procurs.us/bootstraps/big_sur/bootstrap-darwin-amd64.tar.zst
-          sudo gtar --preserve-permissions -xkf ./bootstrap-darwin-amd64.tar.zst -C /
+          wget https://apt.procurs.us/bootstraps/big_sur/bootstrap-darwin-arm64.tar.zst
+          sudo gtar --preserve-permissions -xkf ./bootstrap-darwin-arm64.tar.zst -C /
           echo '/opt/procursus/sbin:/opt/procursus/bin' >> $GITHUB_PATH
           PATH=/opt/procursus/sbin:/opt/procursus/bin:$PATH sudo /opt/procursus/bin/apt update
           sudo /opt/procursus/bin/apt -V full-upgrade -y --allow-downgrades -oDpkg::Options::=--force-confdef -oDpkg::Options::=--force-confnew 
@@ -60,9 +35,9 @@ jobs:
         run: |
           echo '/opt/procursus/sbin:/opt/procursus/bin' >> $GITHUB_PATH
 
-      - name: Select Correct Xcode (14.2)
+      - name: Select Correct Xcode (16.4)
         run: |
-          sudo xcode-select --switch /Applications/Xcode_14.2.app
+          sudo xcode-select --switch /Applications/Xcode_16.4.app
 
       - name: Build Sileo Nightly (iphoneos-arm)
         run: |
@@ -80,24 +55,26 @@ jobs:
         run: |
           make clean package NIGHTLY=1 DEBUG=0 AUTOMATION=1 SILEO_PLATFORM=darwin-arm64
       
-      - name: Import GPG key
-        id: import_gpg
-        uses: crazy-max/ghaction-import-gpg@v5
+      - name: Upload Sileo Nightly (iphoneos-arm)
+        uses: actions/upload-artifact@v4
         with:
-          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          name: sileo-nightly-iphoneos-arm
+          path: Sileo.ipa
 
-      - name: Push To Repo
-        env:
-          AMY_GITHUB_TOKEN: ${{ secrets.AMY_GITHUB }}
-        run: |
-          git config --global user.name "Amy While (Automated)"
-          git config --global user.email "26681721+elihwyma@users.noreply.github.com"
-          git config --global credential.helper cache 
+      - name: Upload Sileo Nightly (iphoneos-arm64)
+        uses: actions/upload-artifact@v4
+        with:
+          name: sileo-nightly-iphoneos-arm64
+          path: Sileo.ipa
 
-          git clone https://${{ env.AMY_GITHUB_TOKEN }}@github.com/elihwyma/amy-repo.git
-          mv packages/* amy-repo/pool/
-          cd amy-repo
-          ./repo.sh
-          git add . 
-          git commit -m "build: sileo"
-          git push
+      - name: Upload Sileo Nightly (darwin-amd64)
+        uses: actions/upload-artifact@v4
+        with:
+          name: sileo-nightly-darwin-amd64
+          path: Sileo.dmg
+
+      - name: Upload Sileo Nightly (darwin-arm64)
+        uses: actions/upload-artifact@v4
+        with:
+          name: sileo-nightly-darwin-arm64
+          path: Sileo.dmg
