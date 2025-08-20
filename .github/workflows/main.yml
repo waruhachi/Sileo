@@ -41,40 +41,13 @@ jobs:
 
       - name: Build Sileo Nightly (iphoneos-arm)
         run: |
-          make clean package NIGHTLY=1 DEBUG=0 ALL_BOOTSTRAPS=1
+          make clean package NIGHTLY=1 DEBUG=0 ALL_BOOTSTRAPS=1 SILEO_PLATFORM=iphoneos-arm
 
       - name: Build Sileo Nightly (iphoneos-arm64)
         run: |
           make clean package NIGHTLY=1 DEBUG=0 ALL_BOOTSTRAPS=1 SILEO_PLATFORM=iphoneos-arm64
-
-      - name: Build Sileo Nightly (darwin-amd64)
-        run: |
-          make clean package NIGHTLY=1 DEBUG=0 AUTOMATION=1 SILEO_PLATFORM=darwin-amd64
-
-      - name: Build Sileo Nightly (darwin-arm64)
-        run: |
-          make clean package NIGHTLY=1 DEBUG=0 AUTOMATION=1 SILEO_PLATFORM=darwin-arm64
       
-      - name: Upload Sileo Nightly (iphoneos-arm)
+      - name: Upload Sileo Nightly
         uses: actions/upload-artifact@v4
         with:
-          name: sileo-nightly-iphoneos-arm
-          path: Sileo.ipa
-
-      - name: Upload Sileo Nightly (iphoneos-arm64)
-        uses: actions/upload-artifact@v4
-        with:
-          name: sileo-nightly-iphoneos-arm64
-          path: Sileo.ipa
-
-      - name: Upload Sileo Nightly (darwin-amd64)
-        uses: actions/upload-artifact@v4
-        with:
-          name: sileo-nightly-darwin-amd64
-          path: Sileo.dmg
-
-      - name: Upload Sileo Nightly (darwin-arm64)
-        uses: actions/upload-artifact@v4
-        with:
-          name: sileo-nightly-darwin-arm64
-          path: Sileo.dmg
+          path: ./packages/*.deb
