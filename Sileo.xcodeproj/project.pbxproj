@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -5158,10 +5158,11 @@
 				ENABLE_TESTABILITY = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SCRROOT)/Deps/lliblzma\"",
-					"\"$(SRCROOT)/Deps/libzstd\"",
-					"\"$(SRCROOT)/Deps/liblz4 \"$(SRCROOT)/Sileo/Backend/C",
-					"Contrib\"",
+					"$(SRCROOT)",
+					"$(SRCROOT)/Deps/liblzma",
+					"$(SRCROOT)/Deps/libzstd",
+					"$(SRCROOT)/Deps/lliblzma",
+					"\"$(SRCROOT)/Sileo/Backend/C Contrib\"",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Sileo/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -5623,10 +5624,11 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SCRROOT)/Deps/lliblzma\"",
-					"\"$(SRCROOT)/Deps/libzstd\"",
-					"\"$(SRCROOT)/Deps/liblz4 \"$(SRCROOT)/Sileo/Backend/C",
-					"Contrib\"",
+					"$(SRCROOT)",
+					"$(SRCROOT)/Deps/liblzma",
+					"$(SRCROOT)/Deps/libzstd",
+					"$(SRCROOT)/Deps/lliblzma",
+					"\"$(SRCROOT)/Sileo/Backend/C Contrib\"",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Sileo/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -5686,10 +5688,11 @@
 				ENABLE_TESTABILITY = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SCRROOT)/Deps/lliblzma\"",
-					"\"$(SRCROOT)/Deps/libzstd\"",
-					"\"$(SRCROOT)/Deps/liblz4 \"$(SRCROOT)/Sileo/Backend/C",
-					"Contrib\"",
+					"$(SRCROOT)",
+					"$(SRCROOT)/Deps/liblzma",
+					"$(SRCROOT)/Deps/libzstd",
+					"$(SRCROOT)/Deps/lliblzma",
+					"\"$(SRCROOT)/Sileo/Backend/C Contrib\"",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Sileo/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;

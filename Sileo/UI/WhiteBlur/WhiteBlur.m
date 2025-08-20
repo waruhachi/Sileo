@@ -9,7 +9,6 @@
 #import "WhiteBlur.h"
 #import "Sileo-Swift.h"
 #import "ZKSwizzle.h"
-#import <UIKit/UIKit.h>
 
 @interface _UIVisualEffectFilterEntry : NSObject
 - (NSString *)filterName;

@@ -6,6 +6,8 @@
 //  Copyright © 2018 CoolStar. All rights reserved.
 //
 
+#import <UIKit/UIKit.h>
+
 #define WHITE_BLUR_TAG ((long)0x70757265)
 
 @interface UIView (Hairline)
