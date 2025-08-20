@@ -3,7 +3,7 @@ on:
     branches:
       - main
 
-name: Build
+name: Build Nightly
 jobs:
   make:
     name: Build and Upload Sileo

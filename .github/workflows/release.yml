@@ -2,7 +2,7 @@ on:
   release:
     types: [published]
 
-name: Build
+name: Build Release
 jobs:
   make:
     name: Build and Upload Sileo
