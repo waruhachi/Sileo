@@ -13,9 +13,14 @@ class TabBar: UITabBar {
         if UIDevice.current.userInterfaceIdiom == .phone {
             return super.traitCollection
         }
-        if UIApplication.shared.statusBarOrientation.isLandscape && self.bounds.width >= 400 {
+        if UIApplication.shared.statusBarOrientation.isLandscape
+            && self.bounds.width >= 400
+        {
             return super.traitCollection
         }
-        return UITraitCollection(traitsFrom: [super.traitCollection, UITraitCollection(horizontalSizeClass: .compact)])
+        return UITraitCollection(traitsFrom: [
+            super.traitCollection,
+            UITraitCollection(horizontalSizeClass: .compact),
+        ])
     }
 }

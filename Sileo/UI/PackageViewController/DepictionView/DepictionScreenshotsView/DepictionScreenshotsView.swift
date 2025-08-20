@@ -6,9 +6,9 @@
 //  Copyright © 2022 Sileo Team. All rights reserved.
 //
 
-import Foundation
-import Evander
 import AVKit
+import Evander
+import Foundation
 
 class DepictionScreenshotsView: DepictionBaseView, UIScrollViewDelegate {
     private let depiction: [String: Any]
@@ -24,14 +24,32 @@ class DepictionScreenshotsView: DepictionBaseView, UIScrollViewDelegate {
 
     private let isPaging: Bool
 
-    convenience required init?(dictionary: [String: Any], viewController: UIViewController, tintColor: UIColor, isActionable: Bool) {
-        self.init(dictionary: dictionary, viewController: viewController, tintColor: tintColor, isPaging: false, isActionable: isActionable)
+    convenience required init?(
+        dictionary: [String: Any],
+        viewController: UIViewController,
+        tintColor: UIColor,
+        isActionable: Bool
+    ) {
+        self.init(
+            dictionary: dictionary,
+            viewController: viewController,
+            tintColor: tintColor,
+            isPaging: false,
+            isActionable: isActionable
+        )
     }
 
-    @objc required init?(dictionary: [String: Any], viewController: UIViewController, tintColor: UIColor, isPaging: Bool, isActionable: Bool) {
+    @objc required init?(
+        dictionary: [String: Any],
+        viewController: UIViewController,
+        tintColor: UIColor,
+        isPaging: Bool,
+        isActionable: Bool
+    ) {
         var dictionary = dictionary
 
-        let deviceName = UIDevice.current.userInterfaceIdiom == .pad ? "ipad" : "iphone"
+        let deviceName =
+            UIDevice.current.userInterfaceIdiom == .pad ? "ipad" : "iphone"
         if let specificDict = dictionary[deviceName] as? [String: Any] {
             dictionary = specificDict
         }
@@ -45,19 +63,26 @@ class DepictionScreenshotsView: DepictionBaseView, UIScrollViewDelegate {
         }
         self.itemSize = itemSize
 
-        guard let itemCornerRadius = dictionary["itemCornerRadius"] as? CGFloat else {
+        guard let itemCornerRadius = dictionary["itemCornerRadius"] as? CGFloat
+        else {
             return nil
         }
         self.itemCornerRadius = itemCornerRadius
         self.isPaging = isPaging
 
-        guard let screenshots = dictionary["screenshots"] as? [[String: Any]] else {
+        guard let screenshots = dictionary["screenshots"] as? [[String: Any]]
+        else {
             return nil
         }
 
         depiction = dictionary
 
-        super.init(dictionary: dictionary, viewController: viewController, tintColor: tintColor, isActionable: isActionable)
+        super.init(
+            dictionary: dictionary,
+            viewController: viewController,
+            tintColor: tintColor,
+            isActionable: isActionable
+        )
 
         scrollView.delegate = self
         scrollView.decelerationRate = .fast
@@ -77,7 +102,10 @@ class DepictionScreenshotsView: DepictionBaseView, UIScrollViewDelegate {
             guard let url = URL(string: urlStr) else {
                 continue
             }
-            guard let accessibilityText = screenshot["accessibilityText"] as? String else {
+            guard
+                let accessibilityText = screenshot["accessibilityText"]
+                    as? String
+            else {
                 continue
             }
 
@@ -101,38 +129,65 @@ class DepictionScreenshotsView: DepictionBaseView, UIScrollViewDelegate {
                 }
             } else {
                 let screenshotView = UIButton(frame: .zero)
-                if (viewController as? DepictionScreenshotsViewController) != nil && screenshot["fullSizeURL"] as? String != nil {
+                if (viewController as? DepictionScreenshotsViewController)
+                    != nil && screenshot["fullSizeURL"] as? String != nil
+                {
                     if let fullSizeURL = screenshot["fullSizeURL"] as? String {
-                        if let image = EvanderNetworking.image(url: fullSizeURL, size: itemSize, { [weak self] image in
-                            if let strong = self {
-                                DispatchQueue.main.async {
-                                    screenshotView.setBackgroundImage(image, for: .normal)
-                                    strong.layoutSubviews()
+                        if let image = EvanderNetworking.image(
+                            url: fullSizeURL,
+                            size: itemSize,
+                            { [weak self] image in
+                                if let strong = self {
+                                    DispatchQueue.main.async {
+                                        screenshotView.setBackgroundImage(
+                                            image,
+                                            for: .normal
+                                        )
+                                        strong.layoutSubviews()
+                                    }
                                 }
                             }
-                        }) {
-                            screenshotView.setBackgroundImage(image, for: .normal)
+                        ) {
+                            screenshotView.setBackgroundImage(
+                                image,
+                                for: .normal
+                            )
                             self.layoutSubviews()
                         }
                     }
                 } else {
-                    if let image = EvanderNetworking.image(url: url, size: itemSize, { [weak self] image in
-                        if let strong = self {
-                            DispatchQueue.main.async {
-                                screenshotView.setBackgroundImage(image, for: .normal)
-                                strong.layoutSubviews()
+                    if let image = EvanderNetworking.image(
+                        url: url,
+                        size: itemSize,
+                        { [weak self] image in
+                            if let strong = self {
+                                DispatchQueue.main.async {
+                                    screenshotView.setBackgroundImage(
+                                        image,
+                                        for: .normal
+                                    )
+                                    strong.layoutSubviews()
+                                }
                             }
                         }
-                    }) {
+                    ) {
                         screenshotView.setBackgroundImage(image, for: .normal)
                         self.layoutSubviews()
                     }
                 }
                 screenshotView.accessibilityLabel = accessibilityText
-                if (viewController as? DepictionScreenshotsViewController) != nil {
+                if (viewController as? DepictionScreenshotsViewController)
+                    != nil
+                {
                     screenshotView.isUserInteractionEnabled = false
                 } else {
-                    screenshotView.addTarget(self, action: #selector(DepictionScreenshotsView.fullScreenImage), for: .touchUpInside)
+                    screenshotView.addTarget(
+                        self,
+                        action: #selector(
+                            DepictionScreenshotsView.fullScreenImage
+                        ),
+                        for: .touchUpInside
+                    )
                 }
                 screenshotView.accessibilityIgnoresInvertColors = true
                 screenshotView.layer.cornerRadius = itemCornerRadius
@@ -142,7 +197,7 @@ class DepictionScreenshotsView: DepictionBaseView, UIScrollViewDelegate {
                 screenshotViews.append(screenshotView)
                 scrollView.addSubview(screenshotView)
             }
-            idx+=1
+            idx += 1
         }
     }
 
@@ -158,16 +213,24 @@ class DepictionScreenshotsView: DepictionBaseView, UIScrollViewDelegate {
         guard let parentViewController = self.parentViewController else {
             return 0
         }
-        let verticalInsets = parentViewController.view.safeAreaInsets.top + parentViewController.view.safeAreaInsets.bottom
+        let verticalInsets =
+            parentViewController.view.safeAreaInsets.top
+            + parentViewController.view.safeAreaInsets.bottom
         return parentViewController.view.bounds.height - 32 - verticalInsets
     }
 
-    @objc func fullScreenImage(_ :Any) {
+    @objc func fullScreenImage(_: Any) {
         let viewcontroller = DepictionScreenshotsViewController()
         viewcontroller.tintColor = self.tintColor
         viewcontroller.depiction = depiction
-        let navController = UINavigationController(rootViewController: viewcontroller)
-        self.parentViewController?.present(navController, animated: true, completion: nil)
+        let navController = UINavigationController(
+            rootViewController: viewcontroller
+        )
+        self.parentViewController?.present(
+            navController,
+            animated: true,
+            completion: nil
+        )
     }
 
     override func layoutSubviews() {
@@ -179,7 +242,9 @@ class DepictionScreenshotsView: DepictionBaseView, UIScrollViewDelegate {
         var viewHeight = itemSize.height
 
         if isPaging {
-            let viewWidth = (self.parentViewController?.view.bounds.width ?? 0) - (spacing * 4)
+            let viewWidth =
+                (self.parentViewController?.view.bounds.width ?? 0)
+                - (spacing * 4)
             x *= 2
 
             viewHeight = self.fullViewHeight()
@@ -188,12 +253,17 @@ class DepictionScreenshotsView: DepictionBaseView, UIScrollViewDelegate {
             if oldSize.height * scale > viewHeight {
                 scale = viewHeight / oldSize.height
             }
-            let imageSize = CGSize(width: oldSize.width * scale, height: oldSize.height * scale)
+            let imageSize = CGSize(
+                width: oldSize.width * scale,
+                height: oldSize.height * scale
+            )
 
             for screenshotView in screenshotViews {
                 var size = imageSize
                 if let screenshotViewButton = screenshotView as? UIButton {
-                    if let backgroundImage = screenshotViewButton.currentBackgroundImage {
+                    if let backgroundImage = screenshotViewButton
+                        .currentBackgroundImage
+                    {
                         size = backgroundImage.size
                     }
                 }
@@ -201,7 +271,7 @@ class DepictionScreenshotsView: DepictionBaseView, UIScrollViewDelegate {
                 size.height = size.height * imageSize.width / size.width
                 size.width = imageSize.width
 
-                if viewWidth/size.width < viewHeight/size.width {
+                if viewWidth / size.width < viewHeight / size.width {
                     scale = viewWidth / size.width
                 } else {
                     scale = viewHeight / size.height
@@ -210,9 +280,13 @@ class DepictionScreenshotsView: DepictionBaseView, UIScrollViewDelegate {
                 size.height *= scale
                 size.width *= scale
 
-                screenshotView.frame = CGRect(origin: CGPoint(x: x + (viewWidth / 2 - size.width / 2),
-                                                              y: 16 + (viewHeight / 2 - size.height / 2)),
-                                              size: size)
+                screenshotView.frame = CGRect(
+                    origin: CGPoint(
+                        x: x + (viewWidth / 2 - size.width / 2),
+                        y: 16 + (viewHeight / 2 - size.height / 2)
+                    ),
+                    size: size
+                )
                 screenshotView.layer.cornerRadius = itemCornerRadius * scale
                 x += viewWidth + spacing
             }
@@ -226,7 +300,9 @@ class DepictionScreenshotsView: DepictionBaseView, UIScrollViewDelegate {
             for screenshotView in screenshotViews {
                 var size = itemSize
                 if let screenshotViewButton = screenshotView as? UIButton {
-                    if let backgroundImage = screenshotViewButton.currentBackgroundImage {
+                    if let backgroundImage = screenshotViewButton
+                        .currentBackgroundImage
+                    {
                         size = backgroundImage.size
                     }
                 }
@@ -244,13 +320,17 @@ class DepictionScreenshotsView: DepictionBaseView, UIScrollViewDelegate {
                     scaling = maxWidth / size.width
                     size.width *= scaling
 
-                    let scaledHeight = size.width * rawImageSize.height/rawImageSize.width
+                    let scaledHeight =
+                        size.width * rawImageSize.height / rawImageSize.width
 
-                    yOffset = (itemSize.height - scaledHeight)/2
+                    yOffset = (itemSize.height - scaledHeight) / 2
                     size.height *= scaling
                 }
 
-                screenshotView.frame = CGRect(origin: CGPoint(x: x, y: 16 + yOffset), size: size)
+                screenshotView.frame = CGRect(
+                    origin: CGPoint(x: x, y: 16 + yOffset),
+                    size: size
+                )
                 screenshotView.layer.cornerRadius = itemCornerRadius * scaling
                 x += size.width + spacing
             }
@@ -258,7 +338,12 @@ class DepictionScreenshotsView: DepictionBaseView, UIScrollViewDelegate {
 
         scrollView.contentSize = CGSize(width: x, height: viewHeight + 32)
         if x < self.bounds.width && !isPaging {
-            scrollView.frame = CGRect(x: (self.bounds.width - x)/2, y: 0, width: x, height: self.bounds.height)
+            scrollView.frame = CGRect(
+                x: (self.bounds.width - x) / 2,
+                y: 0,
+                width: x,
+                height: self.bounds.height
+            )
         } else {
             scrollView.frame = self.bounds
         }
@@ -278,7 +363,9 @@ class DepictionScreenshotsView: DepictionBaseView, UIScrollViewDelegate {
 
     func pageIndex(contentOffset: CGFloat) -> Int {
         let endX = Float(contentOffset)
-        return Int(min(10, max(0, round(endX / Float(self.viewSegmentWidth())))))
+        return Int(
+            min(10, max(0, round(endX / Float(self.viewSegmentWidth()))))
+        )
     }
 
     func currentPageIndex() -> Int {
@@ -290,15 +377,26 @@ class DepictionScreenshotsView: DepictionBaseView, UIScrollViewDelegate {
     }
 
     func scrollToPageIndex(_ pageIndex: Int, animated: Bool) {
-        scrollView.setContentOffset(CGPoint(x: self.contentOffset(pageIndex: pageIndex), y: 0), animated: animated)
+        scrollView.setContentOffset(
+            CGPoint(x: self.contentOffset(pageIndex: pageIndex), y: 0),
+            animated: animated
+        )
     }
 
-    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+    func scrollViewWillEndDragging(
+        _ scrollView: UIScrollView,
+        withVelocity velocity: CGPoint,
+        targetContentOffset: UnsafeMutablePointer<CGPoint>
+    ) {
         if !isPaging {
             return
         }
 
-        let targetIndex = self.pageIndex(contentOffset: targetContentOffset.pointee.x)
-        targetContentOffset.pointee.x = self.contentOffset(pageIndex: targetIndex)
+        let targetIndex = self.pageIndex(
+            contentOffset: targetContentOffset.pointee.x
+        )
+        targetContentOffset.pointee.x = self.contentOffset(
+            pageIndex: targetIndex
+        )
     }
 }

@@ -9,16 +9,15 @@
 import Foundation
 
 extension Data {
-     func append(to fileURL: URL) throws {
-         if let handle = FileHandle(forWritingAtPath: fileURL.path) {
-             defer {
-                 handle.closeFile()
-             }
-             handle.seekToEndOfFile()
-             handle.write(self)
-         }
-         else {
-             try write(to: fileURL, options: .atomic)
-         }
-     }
- }
+    func append(to fileURL: URL) throws {
+        if let handle = FileHandle(forWritingAtPath: fileURL.path) {
+            defer {
+                handle.closeFile()
+            }
+            handle.seekToEndOfFile()
+            handle.write(self)
+        } else {
+            try write(to: fileURL, options: .atomic)
+        }
+    }
+}

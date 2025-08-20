@@ -9,7 +9,7 @@
 import Foundation
 
 extension OperationQueue {
-    
+
     convenience init(name: String, serial: Bool) {
         self.init()
         self.name = name
@@ -17,5 +17,5 @@ extension OperationQueue {
             self.maxConcurrentOperationCount = 1
         }
     }
-    
+
 }

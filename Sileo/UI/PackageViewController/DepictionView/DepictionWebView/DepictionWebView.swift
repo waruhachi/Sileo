@@ -6,10 +6,10 @@
 //  Copyright © 2022 Sileo Team. All rights reserved.
 //
 
+import Evander
 import Foundation
 import SafariServices
 import WebKit
-import Evander
 
 class DepictionWebView: DepictionBaseView {
     let alignment: Int
@@ -19,7 +19,12 @@ class DepictionWebView: DepictionBaseView {
     let width: CGFloat
     let height: CGFloat
 
-    required init?(dictionary: [String: Any], viewController: UIViewController, tintColor: UIColor, isActionable: Bool) {
+    required init?(
+        dictionary: [String: Any],
+        viewController: UIViewController,
+        tintColor: UIColor,
+        isActionable: Bool
+    ) {
         guard let urlStr = dictionary["URL"] as? String else {
             return nil
         }
@@ -56,7 +61,12 @@ class DepictionWebView: DepictionBaseView {
 
         webView = WKWebView(frame: .zero)
 
-        super.init(dictionary: dictionary, viewController: viewController, tintColor: tintColor, isActionable: isActionable)
+        super.init(
+            dictionary: dictionary,
+            viewController: viewController,
+            tintColor: tintColor,
+            isActionable: isActionable
+        )
 
         webView?.load(URLRequest(url: url))
         webView?.scrollView.isScrollEnabled = false
@@ -83,17 +93,20 @@ class DepictionWebView: DepictionBaseView {
 
         var x = CGFloat(0)
         switch alignment {
-        case 2: do {
-            x = self.bounds.width - width
-            break
+        case 2:
+            do {
+                x = self.bounds.width - width
+                break
             }
-        case 1: do {
-            x = (self.bounds.width - width)/2.0
-            break
+        case 1:
+            do {
+                x = (self.bounds.width - width) / 2.0
+                break
             }
-        default: do {
-            x = 0
-            break
+        default:
+            do {
+                x = 0
+                break
             }
         }
         webView?.frame = CGRect(x: x, y: 0, width: width, height: height)
@@ -101,42 +114,76 @@ class DepictionWebView: DepictionBaseView {
 }
 
 extension DepictionWebView: WKUIDelegate {
-    func webView(_ webView: WKWebView, previewingViewControllerForElement elementInfo: WKPreviewElementInfo, defaultActions previewActions: [WKPreviewActionItem]) -> UIViewController? {
+    func webView(
+        _ webView: WKWebView,
+        previewingViewControllerForElement elementInfo: WKPreviewElementInfo,
+        defaultActions previewActions: [WKPreviewActionItem]
+    ) -> UIViewController? {
         guard let url = elementInfo.linkURL,
-            let scheme = url.scheme else {
+            let scheme = url.scheme
+        else {
             return nil
         }
         if scheme == "http" || scheme == "https" {
             let viewController = SFSafariViewController(url: url)
-            viewController.preferredControlTintColor = UINavigationBar.appearance().tintColor
+            viewController.preferredControlTintColor =
+                UINavigationBar.appearance().tintColor
             return viewController
         }
         return nil
     }
 
-    func webView(_ webView: WKWebView, commitPreviewingViewController previewingViewController: UIViewController) {
+    func webView(
+        _ webView: WKWebView,
+        commitPreviewingViewController previewingViewController:
+            UIViewController
+    ) {
         if previewingViewController.isKind(of: SFSafariViewController.self) {
-            parentViewController?.present(previewingViewController, animated: true, completion: nil)
+            parentViewController?.present(
+                previewingViewController,
+                animated: true,
+                completion: nil
+            )
         } else {
-            parentViewController?.navigationController?.pushViewController(previewingViewController, animated: true)
+            parentViewController?.navigationController?.pushViewController(
+                previewingViewController,
+                animated: true
+            )
         }
     }
 }
 
 extension DepictionWebView: WKNavigationDelegate {
-    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        if navigationAction.navigationType == .linkActivated || navigationAction.navigationType == .formSubmitted {
+    func webView(
+        _ webView: WKWebView,
+        decidePolicyFor navigationAction: WKNavigationAction,
+        decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
+    ) {
+        if navigationAction.navigationType == .linkActivated
+            || navigationAction.navigationType == .formSubmitted
+        {
             var presentModally = false
-            guard let newViewController = URLManager.viewController(url: navigationAction.request.url,
-                                                                    isExternalOpen: false,
-                                                                    presentModally: &presentModally) else {
+            guard
+                let newViewController = URLManager.viewController(
+                    url: navigationAction.request.url,
+                    isExternalOpen: false,
+                    presentModally: &presentModally
+                )
+            else {
                 decisionHandler(.cancel)
                 return
             }
             if presentModally {
-                parentViewController?.present(newViewController, animated: true, completion: nil)
+                parentViewController?.present(
+                    newViewController,
+                    animated: true,
+                    completion: nil
+                )
             } else {
-                parentViewController?.navigationController?.pushViewController(newViewController, animated: true)
+                parentViewController?.navigationController?.pushViewController(
+                    newViewController,
+                    animated: true
+                )
             }
             decisionHandler(.cancel)
         } else {

@@ -6,16 +6,19 @@
 //  Copyright © 2022 Sileo Team. All rights reserved.
 //
 
-import Foundation
 import Evander
+import Foundation
 
 class NewsArticleCollectionViewCell: UICollectionViewCell {
     override var isHighlighted: Bool {
         didSet {
             unreadView?.backgroundColor = tintColor
-            FRUIView.animate(withDuration: 0.3, animations: {
-                self.contentView.alpha = self.isHighlighted ? 0.7 : 1
-            })
+            FRUIView.animate(
+                withDuration: 0.3,
+                animations: {
+                    self.contentView.alpha = self.isHighlighted ? 0.7 : 1
+                }
+            )
         }
     }
     public var article: NewsArticle? {
@@ -26,15 +29,17 @@ class NewsArticleCollectionViewCell: UICollectionViewCell {
             if let locale = LanguageHelper.shared.locale {
                 formatter.locale = locale
             }
-            let dateText = DateFormatter.localizedString(from: article?.date ?? Date(),
-                                                         dateStyle: DateFormatter.Style.long,
-                                                         timeStyle: DateFormatter.Style.none)
+            let dateText = DateFormatter.localizedString(
+                from: article?.date ?? Date(),
+                dateStyle: DateFormatter.Style.long,
+                timeStyle: DateFormatter.Style.none
+            )
             dateLabel?.text = dateText
             cardDateLabel?.text = dateText
             excerptLabel?.text = article?.body
             unreadView?.isHidden = article?.userReadDate != nil
             cardUnreadView?.isHidden = article?.userReadDate != nil
-            
+
             self.setNeedsLayout()
         }
     }
@@ -43,16 +48,16 @@ class NewsArticleCollectionViewCell: UICollectionViewCell {
     @IBOutlet private var dateLabel: UILabel?
     @IBOutlet private var excerptLabel: UILabel?
     @IBOutlet private var unreadView: UIView?
-    
+
     @IBOutlet private var darkeningView: UIView?
     @IBOutlet private var imageView: UIImageView?
     @IBOutlet private var cardTitleLabel: UILabel?
     @IBOutlet private var cardDateLabel: UILabel?
     @IBOutlet private var cardUnreadView: UIView?
-    
+
     private var titleConstraints: [NSLayoutConstraint]?
     private var dateConstraints: [NSLayoutConstraint]?
-    
+
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         cardView?.layer.shadowColor = UIColor(white: 0, alpha: 1).cgColor
@@ -60,40 +65,73 @@ class NewsArticleCollectionViewCell: UICollectionViewCell {
         cardView?.layer.shadowRadius = 1
         cardView?.layer.shadowOpacity = 1
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
-        cardView?.layer.shadowPath = UIBezierPath(roundedRect: cardView?.bounds ?? CGRect.zero,
-                                                  cornerRadius: cardView?.layer.cornerRadius ?? 0).cgPath
+        cardView?.layer.shadowPath =
+            UIBezierPath(
+                roundedRect: cardView?.bounds ?? CGRect.zero,
+                cornerRadius: cardView?.layer.cornerRadius ?? 0
+            ).cgPath
 
         titleLabel?.textColor = tintColor
         unreadView?.backgroundColor = tintColor
-        
+
         if self.article != nil && self.article?.imageURL != nil {
             if let url = article?.imageURL {
-                EvanderNetworking.image(url: url, condition: ({ [weak self] in self?.article?.imageURL == url}), imageView: imageView)
+                EvanderNetworking.image(
+                    url: url,
+                    condition: ({ [weak self] in self?.article?.imageURL == url
+                    }),
+                    imageView: imageView
+                )
             }
             cardView?.isHidden = false
-            
+
             var text = article?.type ?? "Editorial"
             if article?.author != nil {
                 text += " by " + (article?.author)!
             }
             cardDateLabel?.text = text
-                       
+
             titleConstraints = []
             if let cardTitleLabel = cardTitleLabel {
-                titleConstraints?.append(cardTitleLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -28))
-                titleConstraints?.append(cardTitleLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16))
-                titleConstraints?.append(cardTitleLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: 16))
+                titleConstraints?.append(
+                    cardTitleLabel.bottomAnchor.constraint(
+                        equalTo: self.bottomAnchor,
+                        constant: -28
+                    )
+                )
+                titleConstraints?.append(
+                    cardTitleLabel.leadingAnchor.constraint(
+                        equalTo: self.leadingAnchor,
+                        constant: 16
+                    )
+                )
+                titleConstraints?.append(
+                    cardTitleLabel.trailingAnchor.constraint(
+                        equalTo: self.trailingAnchor,
+                        constant: 16
+                    )
+                )
             }
-            
+
             dateConstraints = []
             if let cardDateLabel = cardDateLabel {
-                dateConstraints?.append(cardDateLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16))
-                dateConstraints?.append(cardDateLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -12))
+                dateConstraints?.append(
+                    cardDateLabel.leadingAnchor.constraint(
+                        equalTo: self.leadingAnchor,
+                        constant: 16
+                    )
+                )
+                dateConstraints?.append(
+                    cardDateLabel.bottomAnchor.constraint(
+                        equalTo: self.bottomAnchor,
+                        constant: -12
+                    )
+                )
             }
-            
+
             for constraint in titleConstraints ?? [] {
                 constraint.isActive = true
             }
@@ -104,12 +142,12 @@ class NewsArticleCollectionViewCell: UICollectionViewCell {
             cardView?.isHidden = true
         }
     }
-    
+
     override func prepareForReuse() {
         super.prepareForReuse()
         self.article = nil
     }
-    
+
     override func tintColorDidChange() {
         super.tintColorDidChange()
         if self.article?.imageURL == nil {

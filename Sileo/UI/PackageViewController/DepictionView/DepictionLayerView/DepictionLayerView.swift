@@ -10,29 +10,41 @@ import Foundation
 
 class DepictionLayerView: DepictionBaseView {
     private var views: [DepictionBaseView] = []
-    
-    required init?(dictionary: [String: Any], viewController: UIViewController, tintColor: UIColor, isActionable: Bool) {
+
+    required init?(
+        dictionary: [String: Any],
+        viewController: UIViewController,
+        tintColor: UIColor,
+        isActionable: Bool
+    ) {
         guard let rawViews = dictionary["views"] as? [[String: Any]] else {
             return nil
         }
-        
-        super.init(dictionary: dictionary, viewController: viewController, tintColor: tintColor, isActionable: isActionable)
-        
+
+        super.init(
+            dictionary: dictionary,
+            viewController: viewController,
+            tintColor: tintColor,
+            isActionable: isActionable
+        )
+
         for rawView in rawViews {
-            if let depictView = DepictionBaseView.view(dictionary: rawView,
-                                                       viewController: viewController,
-                                                       tintColor: tintColor,
-                                                       isActionable: isActionable) {
+            if let depictView = DepictionBaseView.view(
+                dictionary: rawView,
+                viewController: viewController,
+                tintColor: tintColor,
+                isActionable: isActionable
+            ) {
                 views.append(depictView)
                 self.addSubview(depictView)
             }
         }
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func depictionHeight(width: CGFloat) -> CGFloat {
         var maxHeight = CGFloat(0)
         for view in views {
@@ -41,16 +53,19 @@ class DepictionLayerView: DepictionBaseView {
         }
         return maxHeight
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
         for view in views {
             let width = self.bounds.width
             let height = view.depictionHeight(width: width)
-            view.frame = CGRect(origin: .zero, size: CGSize(width: width, height: height))
+            view.frame = CGRect(
+                origin: .zero,
+                size: CGSize(width: width, height: height)
+            )
         }
     }
-    
+
     override var isHighlighted: Bool {
         didSet {
             if isActionable {

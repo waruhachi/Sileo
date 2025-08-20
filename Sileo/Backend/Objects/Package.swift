@@ -8,7 +8,7 @@
 import UIKit
 
 final class Package: PackageProtocol {
-    
+
     public var package: String
     public var packageID: String
     public var name: String?
@@ -33,64 +33,72 @@ final class Package: PackageProtocol {
     public var installedSize: Int?
     public var tags: PackageTags = .none
     public var nativeDepiction: URL?
-    
+
     public var allVersionsInternal = [String: Package]()
     public var allVersions: [Package] {
         [self] + Array(allVersionsInternal.values)
     }
-    
+
     public var fromStatusFile = false
     public var wantInfo: pkgwant = .unknown
     public var eFlag: pkgeflag = .ok
     public var status: pkgstatus = .installed
     public var installDate: Date?
     public var debPath: String?
-    
+
     public var filename: String?
     public var size: String?
     public var packageFileURL: URL?
     public var userRead = false
-    
+
     public var defaultIcon: UIImage {
         if let rawSection = rawSection {
-            
+
             // we have to do this because some repos have various Addons sections
             // ie, Addons (activator), Addons (youtube), etc
             if rawSection.lowercased().contains("addons") {
-                return UIImage(named: "Category_addons") ?? UIImage(named: "Category_tweak")!
+                return UIImage(named: "Category_addons") ?? UIImage(
+                    named: "Category_tweak"
+                )!
             } else if rawSection.lowercased().contains("themes") {
                 // same case for themes
-                return UIImage(named: "Category_themes") ?? UIImage(named: "Category_tweak")!
+                return UIImage(named: "Category_themes") ?? UIImage(
+                    named: "Category_tweak"
+                )!
             }
-            
-            return UIImage(named: "Category_\(rawSection)") ?? UIImage(named: "Category_\(rawSection)s") ?? UIImage(named: "Category_tweak")!
+
+            return UIImage(named: "Category_\(rawSection)") ?? UIImage(
+                named: "Category_\(rawSection)s"
+            ) ?? UIImage(named: "Category_tweak")!
         }
         return UIImage(named: "Category_tweak")!
     }
-    
+
     var sourceRepo: Repo? {
         if let sourceFileSafe = sourceFile {
             return RepoManager.shared.repo(withSourceFile: sourceFileSafe)
         }
-        
-        return RepoManager.shared.repoList.first { $0.packageDict[packageID] != nil }
+
+        return RepoManager.shared.repoList.first {
+            $0.packageDict[packageID] != nil
+        }
     }
-    
+
     var guid: String {
         String(format: "%@|-|%@", package, version)
     }
-    
+
     init(package: String, version: String) {
         self.package = package
         self.packageID = package
         self.version = version
     }
-    
+
     func hash(into hasher: inout Hasher) {
         hasher.combine(package)
         hasher.combine(version)
     }
-    
+
     public func hasIcon() -> Bool {
         icon != nil
     }
@@ -101,17 +109,16 @@ final class Package: PackageProtocol {
             allVersionsInternal[package.version] = package
         }
     }
-    
+
     public func addOld(from package: Package) {
         for package in package.allVersions {
             if package == self { continue }
             allVersionsInternal[package.version] = package
         }
     }
-    
+
     public func getVersion(_ version: String) -> Package? {
         if version == self.version { return self }
         return allVersionsInternal[version]
     }
 }
-

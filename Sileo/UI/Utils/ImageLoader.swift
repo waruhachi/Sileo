@@ -9,7 +9,5 @@
 import UIKit
 
 extension UIImage {
-    
-    
-    
+
 }

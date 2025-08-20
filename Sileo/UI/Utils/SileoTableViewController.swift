@@ -13,9 +13,13 @@ class SileoTableViewController: UITableViewController {
         didSet {
             var style = statusBarStyle
             if style == .default {
-                if SileoThemeManager.shared.currentTheme.preferredUserInterfaceStyle == .dark {
+                if SileoThemeManager.shared.currentTheme
+                    .preferredUserInterfaceStyle == .dark
+                {
                     style = .lightContent
-                } else if SileoThemeManager.shared.currentTheme.preferredUserInterfaceStyle == .light {
+                } else if SileoThemeManager.shared.currentTheme
+                    .preferredUserInterfaceStyle == .light
+                {
                     if #available(iOS 13.0, *) {
                         style = .darkContent
                     }
@@ -23,12 +27,16 @@ class SileoTableViewController: UITableViewController {
             }
         }
     }
-    
+
     override var preferredStatusBarStyle: UIStatusBarStyle {
         if statusBarStyle == .default {
-            if SileoThemeManager.shared.currentTheme.preferredUserInterfaceStyle == .dark {
+            if SileoThemeManager.shared.currentTheme.preferredUserInterfaceStyle
+                == .dark
+            {
                 return .lightContent
-            } else if SileoThemeManager.shared.currentTheme.preferredUserInterfaceStyle == .light {
+            } else if SileoThemeManager.shared.currentTheme
+                .preferredUserInterfaceStyle == .light
+            {
                 if #available(iOS 13.0, *) {
                     return .darkContent
                 }

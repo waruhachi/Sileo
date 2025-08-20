@@ -9,11 +9,11 @@
 import Foundation
 
 extension Set {
-    
+
     public mutating func removeAll(_ element: @escaping (Element) -> Bool) {
         while let index = first(where: element) {
             remove(index)
         }
     }
-    
+
 }

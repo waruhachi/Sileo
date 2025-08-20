@@ -10,6 +10,7 @@
 
 @interface UIView (Hairline)
 
-@property (nonatomic, assign, getter=_hidesShadow, setter=_setHidesShadow:) BOOL hidesShadow;
+@property(nonatomic, assign, getter=_hidesShadow, setter=_setHidesShadow:)
+    BOOL hidesShadow;
 
 @end

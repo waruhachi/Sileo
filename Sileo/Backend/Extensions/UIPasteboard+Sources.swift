@@ -13,13 +13,15 @@ extension UIPasteboard {
         guard let string = self.string else {
             return []
         }
-        
+
         // Split into discrete URLs separated by whitespace, remove empty strings
-        let possibleURLs = string.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }
-        
+        let possibleURLs = string.components(
+            separatedBy: .whitespacesAndNewlines
+        ).filter { !$0.isEmpty }
+
         return possibleURLs.compactMap { URL(string: $0) }
     }
-    
+
     func newSources() -> [URL] {
         self.sources().filter {
             if $0.scheme == "https" || $0.scheme == "http" {

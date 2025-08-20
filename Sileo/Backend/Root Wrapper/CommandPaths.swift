@@ -9,16 +9,16 @@
 import Foundation
 
 public class CommandPath {
-    
+
     static let prefix: String = {
         #if targetEnvironment(macCatalyst)
-        return "/opt/procursus"
+            return "/opt/procursus"
         #else
-        if Bootstrap.procursus_rootless {
-            return "/var/jb"
-        } else {
-            return ""
-        }
+            if Bootstrap.procursus_rootless {
+                return "/var/jb"
+            } else {
+                return ""
+            }
         #endif
     }()
 
@@ -77,59 +77,59 @@ public class CommandPath {
     static var sourcesListD: String = {
         "\(prefix)/etc/apt/sources.list.d"
     }()
-    
+
     static var alternativeSources: String = {
         "\(prefix)/etc/apt/sileo.list.d"
     }()
 
     static var chown: String = {
         #if targetEnvironment(macCatalyst)
-        return "/usr/sbin/chown"
+            return "/usr/sbin/chown"
         #else
-        return "\(prefix)/usr/bin/chown"
+            return "\(prefix)/usr/bin/chown"
         #endif
     }()
 
     static var aptmark: String = {
         #if targetEnvironment(macCatalyst)
-        return "\(prefix)/bin/apt-mark"
+            return "\(prefix)/bin/apt-mark"
         #else
-        return "\(prefix)/usr/bin/apt-mark"
+            return "\(prefix)/usr/bin/apt-mark"
         #endif
     }()
 
     static var dpkgdeb: String = {
         #if targetEnvironment(macCatalyst)
-        return "\(prefix)/bin/dpkg-deb"
+            return "\(prefix)/bin/dpkg-deb"
         #else
-        return "\(prefix)/usr/bin/dpkg-deb"
+            return "\(prefix)/usr/bin/dpkg-deb"
         #endif
     }()
 
     static var dpkg: String = {
         #if targetEnvironment(macCatalyst)
-        return "\(prefix)/bin/dpkg"
+            return "\(prefix)/bin/dpkg"
         #else
-        return "\(prefix)/usr/bin/dpkg"
+            return "\(prefix)/usr/bin/dpkg"
         #endif
     }()
 
     static var aptget: String = {
         #if targetEnvironment(macCatalyst)
-        return "\(prefix)/bin/apt-get"
+            return "\(prefix)/bin/apt-get"
         #else
-        return "\(prefix)/usr/bin/apt-get"
+            return "\(prefix)/usr/bin/apt-get"
         #endif
     }()
 
     static var aptkey: String = {
         #if targetEnvironment(macCatalyst)
-        return "\(prefix)/bin/apt-key"
+            return "\(prefix)/bin/apt-key"
         #else
-        return "\(prefix)/usr/bin/apt-key"
+            return "\(prefix)/usr/bin/apt-key"
         #endif
     }()
-    
+
     static var gpg: String = {
         "\(prefix)/etc/apt/trusted.gpg.d/"
     }()
@@ -149,12 +149,12 @@ public class CommandPath {
 
     static var whoami: String = {
         #if targetEnvironment(macCatalyst)
-        "/usr/bin/whoami"
+            "/usr/bin/whoami"
         #else
-        if #available(iOS 13, *) {
-            return "\(prefix)/usr/bin/whoami"
-        }
-        return "whoami"
+            if #available(iOS 13, *) {
+                return "\(prefix)/usr/bin/whoami"
+            }
+            return "whoami"
         #endif
     }()
 
@@ -164,26 +164,26 @@ public class CommandPath {
 
     static var dpkgDir: URL = {
         #if targetEnvironment(simulator) || TARGET_SANDBOX
-        return Bundle.main.bundleURL
+            return Bundle.main.bundleURL
         #else
-        return URL(fileURLWithPath: "\(prefix)/Library/dpkg")
+            return URL(fileURLWithPath: "\(prefix)/Library/dpkg")
         #endif
     }()
 
     static var RepoIcon: String = {
         #if targetEnvironment(macCatalyst)
-        return "RepoIcon"
+            return "RepoIcon"
         #else
-        return "CydiaIcon"
+            return "CydiaIcon"
         #endif
     }()
 
     static var group: String = {
         #if targetEnvironment(macCatalyst)
-        return "\(NSUserName()):staff"
+            return "\(NSUserName()):staff"
         #else
-        return "mobile:mobile"
+            return "mobile:mobile"
         #endif
     }()
-    
+
 }

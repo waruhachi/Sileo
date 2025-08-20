@@ -10,9 +10,9 @@ import UIKit
 
 extension UITextView {
     #if targetEnvironment(macCatalyst)
-    @objc(_focusRingType)
-    var focusRingType: UInt {
-        return 1
-    }
+        @objc(_focusRingType)
+        var focusRingType: UInt {
+            return 1
+        }
     #endif
 }

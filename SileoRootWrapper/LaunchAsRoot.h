@@ -11,7 +11,7 @@
 #import <ServiceManagement/ServiceManagement.h>
 
 @interface LaunchAsRoot : NSObject
-@property (class, readonly) LaunchAsRoot *shared;
+@property(class, readonly) LaunchAsRoot *shared;
 - (NSXPCConnection *)connection;
 - (BOOL)installDaemon;
 @end

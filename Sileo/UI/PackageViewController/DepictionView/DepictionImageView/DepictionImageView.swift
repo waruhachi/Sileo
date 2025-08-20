@@ -6,8 +6,8 @@
 //  Copyright © 2022 Sileo Team. All rights reserved.
 //
 
-import UIKit
 import Evander
+import UIKit
 
 class DepictionImageView: DepictionBaseView {
     let alignment: Int
@@ -18,7 +18,12 @@ class DepictionImageView: DepictionBaseView {
     var height: CGFloat
     let xPadding: CGFloat
 
-    required init?(dictionary: [String: Any], viewController: UIViewController, tintColor: UIColor, isActionable: Bool) {
+    required init?(
+        dictionary: [String: Any],
+        viewController: UIViewController,
+        tintColor: UIColor,
+        isActionable: Bool
+    ) {
         guard let url = dictionary["URL"] as? String else {
             return nil
         }
@@ -37,29 +42,39 @@ class DepictionImageView: DepictionBaseView {
 
         imageView = UIImageView(frame: .zero)
 
-        super.init(dictionary: dictionary, viewController: viewController, tintColor: tintColor, isActionable: isActionable)
-        if let image = EvanderNetworking.image(url: url, { [weak self] image in
-            if let strong = self {
-                DispatchQueue.main.async {
-                    strong.imageView?.image = image
-                    let size = image.size
-                    if strong.width == 0 {
-                        strong.width = strong.height * (size.width/size.height)
+        super.init(
+            dictionary: dictionary,
+            viewController: viewController,
+            tintColor: tintColor,
+            isActionable: isActionable
+        )
+        if let image = EvanderNetworking.image(
+            url: url,
+            { [weak self] image in
+                if let strong = self {
+                    DispatchQueue.main.async {
+                        strong.imageView?.image = image
+                        let size = image.size
+                        if strong.width == 0 {
+                            strong.width =
+                                strong.height * (size.width / size.height)
+                        }
+                        if strong.height == 0 {
+                            strong.height =
+                                strong.width * (size.height / size.width)
+                        }
+                        strong.delegate?.subviewHeightChanged()
                     }
-                    if strong.height == 0 {
-                        strong.height = strong.width * (size.height/size.width)
-                    }
-                    strong.delegate?.subviewHeightChanged()
                 }
             }
-        }) {
+        ) {
             imageView?.image = image
             let size = image.size
             if self.width == 0 {
-                self.width = self.height * (size.width/size.height)
+                self.width = self.height * (size.width / size.height)
             }
             if self.height == 0 {
-                self.height = self.width * (size.height/size.width)
+                self.height = self.width * (size.height / size.width)
             }
             self.delegate?.subviewHeightChanged()
         }
@@ -92,18 +107,21 @@ class DepictionImageView: DepictionBaseView {
 
         var x = CGFloat(0)
         switch alignment {
-        case 2: do {
-            x = self.bounds.width - width
-            break
-        }
-        case 1: do {
-            x = (self.bounds.width - width)/2.0
-            break
-        }
-        default: do {
-            x = 0
-            break
-        }
+        case 2:
+            do {
+                x = self.bounds.width - width
+                break
+            }
+        case 1:
+            do {
+                x = (self.bounds.width - width) / 2.0
+                break
+            }
+        default:
+            do {
+                x = 0
+                break
+            }
         }
 
         var height = self.height

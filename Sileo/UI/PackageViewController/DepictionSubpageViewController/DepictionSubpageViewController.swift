@@ -22,8 +22,10 @@ class DepictionSubpageViewController: UIViewController {
         loadingView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(loadingView)
 
-        loadingView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
-        loadingView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor).isActive = true
+        loadingView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor)
+            .isActive = true
+        loadingView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor)
+            .isActive = true
         loadingView.hidesWhenStopped = true
 
         self.reloadData()
@@ -40,15 +42,22 @@ class DepictionSubpageViewController: UIViewController {
 
         URLSession.shared.dataTask(with: depictionURL) { data, _, error in
             guard error == nil,
-                let data = data else {
-                    return
+                let data = data
+            else {
+                return
             }
-            guard let rawDepiction = try? JSONSerialization.jsonObject(with: data, options: []) else {
+            guard
+                let rawDepiction = try? JSONSerialization.jsonObject(
+                    with: data,
+                    options: []
+                )
+            else {
                 return
             }
             guard let depiction = rawDepiction as? [String: Any],
-                (depiction["class"] as? String) != nil else {
-                    return
+                (depiction["class"] as? String) != nil
+            else {
+                return
             }
 
             DispatchQueue.main.sync {
@@ -62,14 +71,22 @@ class DepictionSubpageViewController: UIViewController {
                     }
                 }
 
-                guard let depictView = DepictionBaseView.view(dictionary: depiction, viewController: self, tintColor: nil, isActionable: false) else {
+                guard
+                    let depictView = DepictionBaseView.view(
+                        dictionary: depiction,
+                        viewController: self,
+                        tintColor: nil,
+                        isActionable: false
+                    )
+                else {
                     return
                 }
 
                 self.depictionView?.removeFromSuperview()
                 self.depictionView = depictView
 
-                self.navigationController?.navigationBar.tintColor = depictView.tintColor
+                self.navigationController?.navigationBar.tintColor =
+                    depictView.tintColor
 
                 self.scrollView?.addSubview(depictView)
                 self.loadingView?.stopAnimating()
@@ -79,13 +96,26 @@ class DepictionSubpageViewController: UIViewController {
     }
 
     func versionTooLow() {
-        let alertController = UIAlertController(title: String(localizationKey: "Sileo_Update_Required.Title", type: .error),
-                                                message: String(localizationKey: "Depiction_Requires_Sileo_Update", type: .error),
-                                                preferredStyle: .alert
+        let alertController = UIAlertController(
+            title: String(
+                localizationKey: "Sileo_Update_Required.Title",
+                type: .error
+            ),
+            message: String(
+                localizationKey: "Depiction_Requires_Sileo_Update",
+                type: .error
+            ),
+            preferredStyle: .alert
         )
-        alertController.addAction(UIAlertAction(title: String(localizationKey: "OK"), style: .cancel, handler: { _ in
-            self.dismiss(animated: true, completion: nil)
-        }))
+        alertController.addAction(
+            UIAlertAction(
+                title: String(localizationKey: "OK"),
+                style: .cancel,
+                handler: { _ in
+                    self.dismiss(animated: true, completion: nil)
+                }
+            )
+        )
         self.present(alertController, animated: true, completion: nil)
     }
 
@@ -97,13 +127,25 @@ class DepictionSubpageViewController: UIViewController {
         super.viewDidLayoutSubviews()
 
         guard let depictionView = depictionView,
-        let scrollView = scrollView else {
+            let scrollView = scrollView
+        else {
             return
         }
 
-        let depictionHeight = depictionView.depictionHeight(width: scrollView.bounds.width)
-        depictionView.frame = CGRect(origin: .zero, size: CGSize(width: scrollView.bounds.width, height: depictionHeight))
+        let depictionHeight = depictionView.depictionHeight(
+            width: scrollView.bounds.width
+        )
+        depictionView.frame = CGRect(
+            origin: .zero,
+            size: CGSize(
+                width: scrollView.bounds.width,
+                height: depictionHeight
+            )
+        )
 
-        scrollView.contentSize = CGSize(width: scrollView.bounds.width, height: depictionHeight)
+        scrollView.contentSize = CGSize(
+            width: scrollView.bounds.width,
+            height: depictionHeight
+        )
     }
 }

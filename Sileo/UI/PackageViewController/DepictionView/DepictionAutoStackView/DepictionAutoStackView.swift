@@ -15,11 +15,18 @@ class DepictionAutoStackView: DepictionBaseView {
     private var viewWidths: [CGFloat] = []
     private var horizontalSpacing = CGFloat(0)
 
-    required init?(dictionary: [String: Any], viewController: UIViewController, tintColor: UIColor, isActionable: Bool) {
+    required init?(
+        dictionary: [String: Any],
+        viewController: UIViewController,
+        tintColor: UIColor,
+        isActionable: Bool
+    ) {
         guard let views = dictionary["views"] as? [[String: Any]] else {
             return nil
         }
-        guard let horizontalSpacing = dictionary["horizontalSpacing"] as? CGFloat else {
+        guard
+            let horizontalSpacing = dictionary["horizontalSpacing"] as? CGFloat
+        else {
             return nil
         }
         self.horizontalSpacing = horizontalSpacing
@@ -33,12 +40,23 @@ class DepictionAutoStackView: DepictionBaseView {
             }
         }
 
-        super.init(dictionary: dictionary, viewController: viewController, tintColor: tintColor, isActionable: isActionable)
+        super.init(
+            dictionary: dictionary,
+            viewController: viewController,
+            tintColor: tintColor,
+            isActionable: isActionable
+        )
         for viewDict in views {
-            guard let preferredWidth = viewDict["preferredWidth"] as? CGFloat else {
+            guard let preferredWidth = viewDict["preferredWidth"] as? CGFloat
+            else {
                 continue
             }
-            let view = DepictionBaseView.view(dictionary: viewDict, viewController: viewController, tintColor: tintColor, isActionable: isActionable)
+            let view = DepictionBaseView.view(
+                dictionary: viewDict,
+                viewController: viewController,
+                tintColor: tintColor,
+                isActionable: isActionable
+            )
             if let view = view {
                 self.views.append(view)
                 self.viewWidths.append(preferredWidth)
@@ -170,13 +188,18 @@ class DepictionAutoStackView: DepictionBaseView {
                 }
             }
 
-            let xOffset = (self.bounds.width - currentRowWidth)/2.0
-            view.frame = CGRect(x: xOffset + currentRowX - viewWidth, y: height, width: viewWidth, height: newHeight)
+            let xOffset = (self.bounds.width - currentRowWidth) / 2.0
+            view.frame = CGRect(
+                x: xOffset + currentRowX - viewWidth,
+                y: height,
+                width: viewWidth,
+                height: newHeight
+            )
 
             idx += 1
         }
     }
-    
+
     override var isHighlighted: Bool {
         didSet {
             if isActionable {

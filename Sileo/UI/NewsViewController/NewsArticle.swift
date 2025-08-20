@@ -16,7 +16,7 @@ class NewsArticle {
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
         return formatter
     }()
-    
+
     public var guid: String
     public var title: String
     public var body: String
@@ -27,7 +27,7 @@ class NewsArticle {
     public var date: Date
     public var firstSeenDate: Date?
     public var userReadDate: Date?
-    
+
     init?(dict: [String: String?]) {
         guard let title = dict["title"] as? String,
             let body = dict["excerpt"] as? String,
@@ -35,12 +35,13 @@ class NewsArticle {
             let urlStr = dict["url"] as? String,
             let url = URL(string: urlStr),
             let dateStr = dict["date"] as? String,
-            let date = NewsArticle.iso8601DateFormatter.date(from: dateStr) else {
-                return nil
+            let date = NewsArticle.iso8601DateFormatter.date(from: dateStr)
+        else {
+            return nil
         }
-        
+
         let guid = dict["guid"] as? String ?? "\(dateStr)-\(urlStr)"
-        
+
         self.guid = guid
         self.title = title
         self.body = body

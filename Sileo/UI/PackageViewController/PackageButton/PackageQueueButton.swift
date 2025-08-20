@@ -17,7 +17,9 @@ class PackageQueueButton: PackageButton {
     public var package: Package? {
         didSet {
             if package?.isProvisional ?? false {
-                return self.updateButton(title: String(localizationKey: "Add_Source.Title"))
+                return self.updateButton(
+                    title: String(localizationKey: "Add_Source.Title")
+                )
             }
             self.updatePurchaseStatus()
             self.updateInfo()
@@ -34,140 +36,193 @@ class PackageQueueButton: PackageButton {
             self.updateInfo()
         }
     }
-    
+
     public weak var dataProvider: PackageQueueButtonDataProvider? {
         didSet {
             self.updatePurchaseStatus()
         }
     }
-    
+
     public var overrideTitle: String = ""
     public var shouldCheckPurchaseStatus = false
-    
+
     private var purchased = false
     private var installedPackage: Package?
-    
+
     override func setup() {
         super.setup()
-        
+
         shouldCheckPurchaseStatus = true
-        
+
         self.updateButton(title: String(localizationKey: "Package_Get_Action"))
-        self.addTarget(self, action: #selector(PackageQueueButton.buttonTapped(_:)), for: .touchUpInside)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(PackageQueueButton.updateInfo),
-                                               name: PackageListManager.stateChange,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(PackageQueueButton.updateInfo),
-                                               name: DownloadManager.lockStateChangeNotification,
-                                               object: nil)
-        
-        let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(PackageQueueButton.showDowngradePrompt(_:)))
+        self.addTarget(
+            self,
+            action: #selector(PackageQueueButton.buttonTapped(_:)),
+            for: .touchUpInside
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(PackageQueueButton.updateInfo),
+            name: PackageListManager.stateChange,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(PackageQueueButton.updateInfo),
+            name: DownloadManager.lockStateChangeNotification,
+            object: nil
+        )
+
+        let longPressGesture = UILongPressGestureRecognizer(
+            target: self,
+            action: #selector(PackageQueueButton.showDowngradePrompt(_:))
+        )
         self.addGestureRecognizer(longPressGesture)
     }
 
     @objc func showDowngradePrompt(_ sender: Any?) {
         guard let package = package,
-            (!package.commercial || purchased) else {
+            !package.commercial || purchased
+        else {
             return
         }
-        let downgradePrompt = UIAlertController(title: String(localizationKey: "Select Version"),
-                                                message: String(localizationKey: "Select the version of the package to install"),
-                                                preferredStyle: .actionSheet)
-        let allVersionsSorted = package.allVersions.sorted(by: { obj1, obj2 -> Bool in
+        let downgradePrompt = UIAlertController(
+            title: String(localizationKey: "Select Version"),
+            message: String(
+                localizationKey: "Select the version of the package to install"
+            ),
+            preferredStyle: .actionSheet
+        )
+        let allVersionsSorted = package.allVersions.sorted(by: {
+            obj1,
+            obj2 -> Bool in
             if DpkgWrapper.isVersion(obj1.version, greaterThan: obj2.version) {
                 return true
             }
             return false
         })
         for package in allVersionsSorted {
-            if (package.sourceRepo?.rawURL.hasPrefix("https://") == true ||
-                package.sourceRepo?.rawURL.hasPrefix("http://") == true)
-                && package.filename != nil && package.size != nil {
-                downgradePrompt.addAction(UIAlertAction(title: package.version, style: .default, handler: { (_: UIAlertAction) in
-                    let downloadManager = DownloadManager.shared
-                    let queueFound = downloadManager.find(package: package)
-                    if queueFound != .none {
-                        // but it's a already queued! user changed their mind about installing this new package => nuke it from the queue
-                        downloadManager.remove(package: package, queue: queueFound)
-                    }
+            if (package.sourceRepo?.rawURL.hasPrefix("https://") == true
+                || package.sourceRepo?.rawURL.hasPrefix("http://") == true)
+                && package.filename != nil && package.size != nil
+            {
+                downgradePrompt.addAction(
+                    UIAlertAction(
+                        title: package.version,
+                        style: .default,
+                        handler: { (_: UIAlertAction) in
+                            let downloadManager = DownloadManager.shared
+                            let queueFound = downloadManager.find(
+                                package: package
+                            )
+                            if queueFound != .none {
+                                // but it's a already queued! user changed their mind about installing this new package => nuke it from the queue
+                                downloadManager.remove(
+                                    package: package,
+                                    queue: queueFound
+                                )
+                            }
 
-                    downloadManager.add(package: package, queue: .installations)
-                    downloadManager.reloadData(recheckPackages: true)
-                }))
+                            downloadManager.add(
+                                package: package,
+                                queue: .installations
+                            )
+                            downloadManager.reloadData(recheckPackages: true)
+                        }
+                    )
+                )
             }
-         }
+        }
 
-        let cancelAction = UIAlertAction(title: String(localizationKey: "Package_Cancel_Action"), style: .cancel, handler: nil)
+        let cancelAction = UIAlertAction(
+            title: String(localizationKey: "Package_Cancel_Action"),
+            style: .cancel,
+            handler: nil
+        )
         downgradePrompt.addAction(cancelAction)
         if UIDevice.current.userInterfaceIdiom == .pad {
             downgradePrompt.popoverPresentationController?.sourceView = self
         }
         let tintColor = self.tintColor
         downgradePrompt.view.tintColor = tintColor
-        viewControllerForPresentation?.present(downgradePrompt, animated: true, completion: {
-            downgradePrompt.view.tintColor = tintColor
-        })
+        viewControllerForPresentation?.present(
+            downgradePrompt,
+            animated: true,
+            completion: {
+                downgradePrompt.view.tintColor = tintColor
+            }
+        )
     }
-    
+
     @objc func updateInfo() {
         guard let package = package else {
             self.isEnabled = false
             return
         }
-        installedPackage = PackageListManager.shared.installedPackage(identifier: package.package)
-            
+        installedPackage = PackageListManager.shared.installedPackage(
+            identifier: package.package
+        )
+
         purchased = paymentInfo?.purchased ?? false
-        
+
         let queueFound = DownloadManager.shared.find(package: package)
         var prominent = false
         if !overrideTitle.isEmpty {
             self.updateButton(title: overrideTitle)
         } else if queueFound != .none {
-            self.updateButton(title: String(localizationKey: "Package_Queue_Action"))
+            self.updateButton(
+                title: String(localizationKey: "Package_Queue_Action")
+            )
         } else if installedPackage != nil {
-            self.updateButton(title: String(localizationKey: "Package_Modify_Action"))
+            self.updateButton(
+                title: String(localizationKey: "Package_Modify_Action")
+            )
         } else if let price = paymentInfo?.price,
-            package.commercial && !purchased {
+            package.commercial && !purchased
+        {
             self.updateButton(title: price)
         } else {
-            self.updateButton(title: String(localizationKey: "Package_Get_Action"))
+            self.updateButton(
+                title: String(localizationKey: "Package_Get_Action")
+            )
             prominent = true
         }
-        
+
         self.isProminent = prominent
         self.isEnabled = !DownloadManager.shared.lockedForInstallation
     }
-    
+
     func updatePurchaseStatus() {
         guard let dataProvider = dataProvider,
             shouldCheckPurchaseStatus,
             package?.commercial ?? false,
-            !(package?.package.contains("/") ?? false) else {
-                return
+            !(package?.package.contains("/") ?? false)
+        else {
+            return
         }
         DispatchQueue.main.async {
             self.isEnabled = false
             dataProvider.updatePurchaseStatus()
         }
     }
-    
+
     func updateButton(title: String) {
         self.setTitle(title.uppercased(), for: .normal)
     }
-    
+
     func actionItems() -> [CSActionItem] {
         guard let package = self.package else {
-                return []
+            return []
         }
         if package.isProvisional ?? false {
             guard let source = package.source else {
                 return []
             }
-            let action = CSActionItem(title: String(localizationKey: "Add_Source.Title"),
-                                      image: UIImage(systemNameOrNil: "square.and.arrow.down"),
-                                      style: .default) {
+            let action = CSActionItem(
+                title: String(localizationKey: "Add_Source.Title"),
+                image: UIImage(systemNameOrNil: "square.and.arrow.down"),
+                style: .default
+            ) {
                 self.hapticResponse()
                 self.addRepo(source)
                 CanisterResolver.shared.queuePackage(package)
@@ -182,41 +237,72 @@ class PackageQueueButton: PackageButton {
         if let installedPackage = installedPackage {
             if !package.commercial || (paymentInfo?.available ?? false) {
                 var repo: Repo?
-                for repoEntry in RepoManager.shared.repoList where
-                    repoEntry.rawEntry == package.sourceFile {
+                for repoEntry in RepoManager.shared.repoList
+                where
+                    repoEntry.rawEntry == package.sourceFile
+                {
                     repo = repoEntry
                 }
                 if package.filename != nil && repo != nil {
-                    if DpkgWrapper.isVersion(package.version, greaterThan: installedPackage.version) {
-                        let action = CSActionItem(title: String(localizationKey: "Package_Upgrade_Action"),
-                                                  image: UIImage(systemNameOrNil: "icloud.and.arrow.down"),
-                                                  style: .default) {
+                    if DpkgWrapper.isVersion(
+                        package.version,
+                        greaterThan: installedPackage.version
+                    ) {
+                        let action = CSActionItem(
+                            title: String(
+                                localizationKey: "Package_Upgrade_Action"
+                            ),
+                            image: UIImage(
+                                systemNameOrNil: "icloud.and.arrow.down"
+                            ),
+                            style: .default
+                        ) {
                             if queueFound != .none {
-                                downloadManager.remove(package: package, queue: queueFound)
+                                downloadManager.remove(
+                                    package: package,
+                                    queue: queueFound
+                                )
                             }
                             self.hapticResponse()
-                            downloadManager.add(package: package, queue: .upgrades)
+                            downloadManager.add(
+                                package: package,
+                                queue: .upgrades
+                            )
                             downloadManager.reloadData(recheckPackages: true)
                         }
                         actionItems.append(action)
                     } else if package.version == installedPackage.version {
-                        let action = CSActionItem(title: String(localizationKey: "Package_Reinstall_Action"),
-                                                  image: UIImage(systemNameOrNil: "arrow.clockwise.circle"),
-                                                  style: .default) {
+                        let action = CSActionItem(
+                            title: String(
+                                localizationKey: "Package_Reinstall_Action"
+                            ),
+                            image: UIImage(
+                                systemNameOrNil: "arrow.clockwise.circle"
+                            ),
+                            style: .default
+                        ) {
                             if queueFound != .none {
-                                downloadManager.remove(package: package, queue: queueFound)
+                                downloadManager.remove(
+                                    package: package,
+                                    queue: queueFound
+                                )
                             }
                             self.hapticResponse()
-                            downloadManager.add(package: package, queue: .installations)
+                            downloadManager.add(
+                                package: package,
+                                queue: .installations
+                            )
                             downloadManager.reloadData(recheckPackages: true)
                         }
                         actionItems.append(action)
                     }
                 }
             }
-            let action = CSActionItem(title: String(localizationKey: "Package_Uninstall_Action"),
-                                      image: UIImage(systemNameOrNil: "trash.circle"),
-                                      style: .destructive) {
+            let action = CSActionItem(
+                title: String(localizationKey: "Package_Uninstall_Action"),
+                image: UIImage(systemNameOrNil: "trash.circle"),
+                style: .destructive
+            ) {
                 self.hapticResponse()
                 downloadManager.add(package: package, queue: .uninstallations)
                 downloadManager.reloadData(recheckPackages: true)
@@ -225,16 +311,24 @@ class PackageQueueButton: PackageButton {
         } else {
             // here's new packages not yet queued
             if let repo = package.sourceRepo,
-                package.commercial && !purchased {
-                let buttonText = paymentInfo?.price ?? String(localizationKey: "Package_Get_Action")
-                let action = CSActionItem(title: buttonText,
-                                          image: UIImage(systemNameOrNil: "dollarsign.circle"),
-                                          style: .default) {
+                package.commercial && !purchased
+            {
+                let buttonText =
+                    paymentInfo?.price
+                    ?? String(localizationKey: "Package_Get_Action")
+                let action = CSActionItem(
+                    title: buttonText,
+                    image: UIImage(systemNameOrNil: "dollarsign.circle"),
+                    style: .default
+                ) {
                     self.hapticResponse()
-                    PaymentManager.shared.getPaymentProvider(for: repo) { error, provider in
+                    PaymentManager.shared.getPaymentProvider(for: repo) {
+                        error,
+                        provider in
                         guard let provider = provider,
-                            error == nil else {
-                                return
+                            error == nil
+                        else {
+                            return
                         }
                         if provider.isAuthenticated {
                             self.initatePurchase(provider: provider)
@@ -245,9 +339,11 @@ class PackageQueueButton: PackageButton {
                 }
                 actionItems.append(action)
             } else {
-                let action = CSActionItem(title: String(localizationKey: "Package_Get_Action"),
-                                          image: UIImage(systemNameOrNil: "square.and.arrow.down"),
-                                          style: .default) {
+                let action = CSActionItem(
+                    title: String(localizationKey: "Package_Get_Action"),
+                    image: UIImage(systemNameOrNil: "square.and.arrow.down"),
+                    style: .default
+                ) {
                     // here's new packages not yet queued & FREE
                     self.hapticResponse()
                     downloadManager.add(package: package, queue: .installations)
@@ -256,25 +352,35 @@ class PackageQueueButton: PackageButton {
                 actionItems.append(action)
             }
         }
-        let copyBundleIDAction = CSActionItem(title: String(localizationKey: "Copy_ID"), image: .init(systemNameOrNil: "doc.on.doc"), style: .default) {
+        let copyBundleIDAction = CSActionItem(
+            title: String(localizationKey: "Copy_ID"),
+            image: .init(systemNameOrNil: "doc.on.doc"),
+            style: .default
+        ) {
             UIPasteboard.general.string = package.packageID
         }
         actionItems.append(copyBundleIDAction)
-        
+
         return actionItems
     }
-    
+
     private func addRepo(_ url: URL) {
-        if let tabBarController = self.window?.rootViewController as? UITabBarController,
-            let sourcesSVC = tabBarController.viewControllers?[2] as? UISplitViewController,
-              let sourcesNavNV = sourcesSVC.viewControllers[0] as? SileoNavigationController {
-              tabBarController.selectedViewController = sourcesSVC
-              if let sourcesVC = sourcesNavNV.viewControllers[0] as? SourcesViewController {
+        if let tabBarController = self.window?.rootViewController
+            as? UITabBarController,
+            let sourcesSVC = tabBarController.viewControllers?[2]
+                as? UISplitViewController,
+            let sourcesNavNV = sourcesSVC.viewControllers[0]
+                as? SileoNavigationController
+        {
+            tabBarController.selectedViewController = sourcesSVC
+            if let sourcesVC = sourcesNavNV.viewControllers[0]
+                as? SourcesViewController
+            {
                 sourcesVC.presentAddSourceEntryField(url: url)
-              }
+            }
         }
     }
-    
+
     private func handleButtonPress(_ package: Package, _ check: Bool = true) {
         if check {
             if package.isProvisional ?? false {
@@ -293,25 +399,48 @@ class PackageQueueButton: PackageButton {
             downloadManager.reloadData(recheckPackages: true)
         } else if let installedPackage = installedPackage {
             // road clear to modify an installed package, now we gotta decide what modification
-            let downloadPopup: UIAlertController! = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+            let downloadPopup: UIAlertController! = UIAlertController(
+                title: nil,
+                message: nil,
+                preferredStyle: .actionSheet
+            )
             if !package.commercial || (paymentInfo?.available ?? false) {
                 var repo: Repo?
-                for repoEntry in RepoManager.shared.repoList where
-                    repoEntry.rawEntry == package.sourceFile {
+                for repoEntry in RepoManager.shared.repoList
+                where
+                    repoEntry.rawEntry == package.sourceFile
+                {
                     repo = repoEntry
-                 }
+                }
                 if package.filename != nil && repo != nil {
-                    if DpkgWrapper.isVersion(package.version, greaterThan: installedPackage.version) {
-                        let upgradeAction = UIAlertAction(title: String(localizationKey: "Package_Upgrade_Action"),
-                                                          style: .default) { _ in
-                            downloadManager.add(package: package, queue: .upgrades)
+                    if DpkgWrapper.isVersion(
+                        package.version,
+                        greaterThan: installedPackage.version
+                    ) {
+                        let upgradeAction = UIAlertAction(
+                            title: String(
+                                localizationKey: "Package_Upgrade_Action"
+                            ),
+                            style: .default
+                        ) { _ in
+                            downloadManager.add(
+                                package: package,
+                                queue: .upgrades
+                            )
                             downloadManager.reloadData(recheckPackages: true)
                         }
                         downloadPopup.addAction(upgradeAction)
                     } else if package.version == installedPackage.version {
-                        let reinstallAction = UIAlertAction(title: String(localizationKey: "Package_Reinstall_Action"),
-                                                            style: .default) { _ in
-                            downloadManager.add(package: package, queue: .installations)
+                        let reinstallAction = UIAlertAction(
+                            title: String(
+                                localizationKey: "Package_Reinstall_Action"
+                            ),
+                            style: .default
+                        ) { _ in
+                            downloadManager.add(
+                                package: package,
+                                queue: .installations
+                            )
                             downloadManager.reloadData(recheckPackages: true)
                         }
                         downloadPopup.addAction(reinstallAction)
@@ -319,12 +448,22 @@ class PackageQueueButton: PackageButton {
                 }
             }
 
-            let removeAction = UIAlertAction(title: String(localizationKey: "Package_Uninstall_Action"), style: .default, handler: { _ in
-                downloadManager.add(package: package, queue: .uninstallations)
-                downloadManager.reloadData(recheckPackages: true)
-            })
+            let removeAction = UIAlertAction(
+                title: String(localizationKey: "Package_Uninstall_Action"),
+                style: .default,
+                handler: { _ in
+                    downloadManager.add(
+                        package: package,
+                        queue: .uninstallations
+                    )
+                    downloadManager.reloadData(recheckPackages: true)
+                }
+            )
             downloadPopup.addAction(removeAction)
-            let cancelAction: UIAlertAction! = UIAlertAction(title: String(localizationKey: "Package_Cancel_Action"), style: .cancel)
+            let cancelAction: UIAlertAction! = UIAlertAction(
+                title: String(localizationKey: "Package_Cancel_Action"),
+                style: .cancel
+            )
             downloadPopup.addAction(cancelAction)
             if UIDevice.current.userInterfaceIdiom == .pad {
                 downloadPopup.popoverPresentationController?.sourceView = self
@@ -333,19 +472,28 @@ class PackageQueueButton: PackageButton {
             if tintColor != nil {
                 downloadPopup.view.tintColor = tintColor
             }
-            self.viewControllerForPresentation?.present(downloadPopup, animated: true, completion: {
-                if tintColor != nil {
-                    downloadPopup.view.tintColor = tintColor
+            self.viewControllerForPresentation?.present(
+                downloadPopup,
+                animated: true,
+                completion: {
+                    if tintColor != nil {
+                        downloadPopup.view.tintColor = tintColor
+                    }
                 }
-            })
+            )
         } else {
             // here's new packages not yet queued
             if let repo = package.sourceRepo,
-                package.commercial && !purchased && !package.package.contains("/") {
-                PaymentManager.shared.getPaymentProvider(for: repo) { error, provider in
+                package.commercial && !purchased
+                    && !package.package.contains("/")
+            {
+                PaymentManager.shared.getPaymentProvider(for: repo) {
+                    error,
+                    provider in
                     guard let provider = provider,
-                        error == nil else {
-                            return
+                        error == nil
+                    else {
+                        return
                     }
                     if provider.isAuthenticated {
                         self.initatePurchase(provider: provider)
@@ -360,37 +508,55 @@ class PackageQueueButton: PackageButton {
             }
         }
     }
-    
+
     @objc func buttonTapped(_ sender: Any?) {
         guard let package = self.package else {
             return
         }
         self.handleButtonPress(package)
     }
-    
+
     private func initatePurchase(provider: PaymentProvider) {
         guard let package = package else {
             return
         }
-        provider.initiatePurchase(forPackageIdentifier: package.package) { error, status, actionURL in
+        provider.initiatePurchase(forPackageIdentifier: package.package) {
+            error,
+            status,
+            actionURL in
             if status == .cancel { return }
             guard !(error?.shouldInvalidate ?? false) else {
                 return self.authenticate(provider: provider)
             }
             if error != nil || status == .failed {
-                self.presentAlert(paymentError: error,
-                                  title: String(localizationKey: "Purchase_Initiate_Fail.Title",
-                                                type: .error))
+                self.presentAlert(
+                    paymentError: error,
+                    title: String(
+                        localizationKey: "Purchase_Initiate_Fail.Title",
+                        type: .error
+                    )
+                )
             }
             guard let actionURL = actionURL,
-                status != .immediateSuccess else {
-                    return self.updatePurchaseStatus()
+                status != .immediateSuccess
+            else {
+                return self.updatePurchaseStatus()
             }
             DispatchQueue.main.async {
-                PaymentAuthenticator.shared.handlePayment(actionURL: actionURL, provider: provider, window: self.window) { error, success in
+                PaymentAuthenticator.shared.handlePayment(
+                    actionURL: actionURL,
+                    provider: provider,
+                    window: self.window
+                ) { error, success in
                     if error != nil {
-                        let title = String(localizationKey: "Purchase_Complete_Fail.Title", type: .error)
-                        return self.presentAlert(paymentError: error, title: title)
+                        let title = String(
+                            localizationKey: "Purchase_Complete_Fail.Title",
+                            type: .error
+                        )
+                        return self.presentAlert(
+                            paymentError: error,
+                            title: title
+                        )
                     }
                     if success {
                         self.updatePurchaseStatus()
@@ -399,27 +565,37 @@ class PackageQueueButton: PackageButton {
             }
         }
     }
-    
+
     private func authenticate(provider: PaymentProvider) {
-        PaymentAuthenticator.shared.authenticate(provider: provider, window: self.window) { error, success in
+        PaymentAuthenticator.shared.authenticate(
+            provider: provider,
+            window: self.window
+        ) { error, success in
             if error != nil {
-                return self.presentAlert(paymentError: error, title: String(localizationKey: "Purchase_Auth_Complete_Fail.Title",
-                                                                            type: .error))
+                return self.presentAlert(
+                    paymentError: error,
+                    title: String(
+                        localizationKey: "Purchase_Auth_Complete_Fail.Title",
+                        type: .error
+                    )
+                )
             }
             if success {
                 self.updatePurchaseStatus()
             }
         }
     }
-    
+
     private func presentAlert(paymentError: PaymentError?, title: String) {
         DispatchQueue.main.async {
-            self.viewControllerForPresentation?.present(PaymentError.alert(for: paymentError, title: title),
-                                                        animated: true,
-                                                        completion: nil)
+            self.viewControllerForPresentation?.present(
+                PaymentError.alert(for: paymentError, title: title),
+                animated: true,
+                completion: nil
+            )
         }
     }
-    
+
     private func hapticResponse() {
         if #available(iOS 13, *) {
             let generator = UIImpactFeedbackGenerator(style: .soft)

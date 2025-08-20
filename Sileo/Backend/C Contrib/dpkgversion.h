@@ -9,12 +9,12 @@
 #ifndef dpkgversion_h
 #define dpkgversion_h
 
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
-#include <stdlib.h>
-#include <limits.h>
 #include <ctype.h>
+#include <errno.h>
+#include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
 
 struct DpkgVersion {
@@ -24,6 +24,7 @@ struct DpkgVersion {
     uint8_t requiresFree;
 };
 
-int compareVersion(const char *version1, int version1Count, const char *version2, int version2Count);
+int compareVersion(const char *version1, int version1Count,
+                   const char *version2, int version2Count);
 
 #endif /* dpkgversion_h */

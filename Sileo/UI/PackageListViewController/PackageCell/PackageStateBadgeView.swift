@@ -24,35 +24,45 @@ import Foundation
         }
     }
     var imageView: UIImageView
-    
+
     override init(frame: CGRect) {
         imageView = UIImageView()
-        
+
         super.init(frame: frame)
-          
+
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
         imageView.tintColor = .white
         imageView.heightAnchor.constraint(equalToConstant: 12).isActive = true
-        imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor).isActive = true
-        
+        imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor)
+            .isActive = true
+
         self.addSubview(imageView)
-        
-        imageView.topAnchor.constraint(equalTo: self.topAnchor, constant: 4).isActive = true
-        imageView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -4).isActive = true
-        imageView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 4).isActive = true
-        imageView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -4).isActive = true
+
+        imageView.topAnchor.constraint(equalTo: self.topAnchor, constant: 4)
+            .isActive = true
+        imageView.bottomAnchor.constraint(
+            equalTo: self.bottomAnchor,
+            constant: -4
+        ).isActive = true
+        imageView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 4)
+            .isActive = true
+        imageView.rightAnchor.constraint(
+            equalTo: self.rightAnchor,
+            constant: -4
+        ).isActive = true
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-      
+
     override public func layoutSubviews() {
         super.layoutSubviews()
-        self.layer.cornerRadius = fmin(self.bounds.width, self.bounds.height)/2
+        self.layer.cornerRadius =
+            fmin(self.bounds.width, self.bounds.height) / 2
     }
-    
+
     func backgroundColor(state: PackageBadgeState) -> UIColor {
         switch state {
         case .installed:
@@ -63,7 +73,7 @@ import Foundation
             return .red
         }
     }
-    
+
     func image(state: PackageBadgeState) -> UIImage? {
         switch state {
         case .installed:
@@ -78,5 +88,5 @@ import Foundation
             return UIImage(named: "DeleteQueue")
         }
     }
-    
+
 }

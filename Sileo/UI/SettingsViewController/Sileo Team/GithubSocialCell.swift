@@ -6,11 +6,11 @@
 //
 //  Copyright © 2021 Amy While. All rights reserved.
 
-import UIKit
 import Evander
+import UIKit
 
 class GithubSocialCell: UITableViewCell {
-    
+
     private var author = UILabel()
     private var profilePicture = UIImageView()
     private var authorLink = UILabel()
@@ -22,19 +22,33 @@ class GithubSocialCell: UITableViewCell {
             self.pullImage()
         }
     }
-    
+
     private func pullImage() {
         guard let url = social?.url else { return }
-        EvanderNetworking.image(url: url, size: profilePicture.frame.size, condition: { [weak self] in self?.social?.url == url }, imageView: profilePicture)
+        EvanderNetworking.image(
+            url: url,
+            size: profilePicture.frame.size,
+            condition: { [weak self] in self?.social?.url == url },
+            imageView: profilePicture
+        )
     }
-    
+
     let height: CGFloat = 75
-    
-    override func systemLayoutSizeFitting(_ targetSize: CGSize, withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority, verticalFittingPriority: UILayoutPriority) -> CGSize {
-        let size = super.systemLayoutSizeFitting(targetSize, withHorizontalFittingPriority: horizontalFittingPriority, verticalFittingPriority: verticalFittingPriority)
+
+    override func systemLayoutSizeFitting(
+        _ targetSize: CGSize,
+        withHorizontalFittingPriority horizontalFittingPriority:
+            UILayoutPriority,
+        verticalFittingPriority: UILayoutPriority
+    ) -> CGSize {
+        let size = super.systemLayoutSizeFitting(
+            targetSize,
+            withHorizontalFittingPriority: horizontalFittingPriority,
+            verticalFittingPriority: verticalFittingPriority
+        )
         return CGSize(width: size.width, height: max(size.height, height))
     }
-    
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.contentView.addSubview(profilePicture)
@@ -42,29 +56,54 @@ class GithubSocialCell: UITableViewCell {
         self.contentView.addSubview(authorLink)
         self.selectionStyle = .gray
         self.backgroundColor = .none
-        
+
         profilePicture.translatesAutoresizingMaskIntoConstraints = false
-        profilePicture.widthAnchor.constraint(equalToConstant: 60).isActive = true
-        profilePicture.heightAnchor.constraint(equalToConstant: 60).isActive = true
-        profilePicture.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 17.5).isActive = true
-        profilePicture.centerYAnchor.constraint(equalTo: self.contentView.centerYAnchor).isActive = true
+        profilePicture.widthAnchor.constraint(equalToConstant: 60).isActive =
+            true
+        profilePicture.heightAnchor.constraint(equalToConstant: 60).isActive =
+            true
+        profilePicture.leadingAnchor.constraint(
+            equalTo: self.contentView.leadingAnchor,
+            constant: 17.5
+        ).isActive = true
+        profilePicture.centerYAnchor.constraint(
+            equalTo: self.contentView.centerYAnchor
+        ).isActive = true
         profilePicture.layer.masksToBounds = true
         profilePicture.layer.cornerRadius = 30
-        
+
         author.translatesAutoresizingMaskIntoConstraints = false
-        author.centerYAnchor.constraint(equalTo: self.contentView.centerYAnchor, constant: -7.5).isActive = true
-        author.leadingAnchor.constraint(equalTo: self.profilePicture.trailingAnchor, constant: 7.5).isActive = true
-        author.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: 7.5).isActive = true
+        author.centerYAnchor.constraint(
+            equalTo: self.contentView.centerYAnchor,
+            constant: -7.5
+        ).isActive = true
+        author.leadingAnchor.constraint(
+            equalTo: self.profilePicture.trailingAnchor,
+            constant: 7.5
+        ).isActive = true
+        author.trailingAnchor.constraint(
+            equalTo: self.contentView.trailingAnchor,
+            constant: 7.5
+        ).isActive = true
         author.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
         author.adjustsFontSizeToFitWidth = true
-        
+
         authorLink.translatesAutoresizingMaskIntoConstraints = false
-        authorLink.centerYAnchor.constraint(equalTo: self.contentView.centerYAnchor, constant: 10).isActive = true
-        authorLink.leadingAnchor.constraint(equalTo: self.profilePicture.trailingAnchor, constant: 7.5).isActive = true
-        authorLink.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: 7.5).isActive = true
+        authorLink.centerYAnchor.constraint(
+            equalTo: self.contentView.centerYAnchor,
+            constant: 10
+        ).isActive = true
+        authorLink.leadingAnchor.constraint(
+            equalTo: self.profilePicture.trailingAnchor,
+            constant: 7.5
+        ).isActive = true
+        authorLink.trailingAnchor.constraint(
+            equalTo: self.contentView.trailingAnchor,
+            constant: 7.5
+        ).isActive = true
         authorLink.font = UIFont.systemFont(ofSize: 13, weight: .light)
         authorLink.adjustsFontSizeToFitWidth = true
-        
+
         author.textColor = .sileoLabel
         authorLink.textColor = .sileoLabel
     }
@@ -80,7 +119,7 @@ class GithubSocial {
     var url: String
     var role: String
     var twitter: URL
-    
+
     init(githubProfile: String, author: String, role: String, twitter: URL) {
         self.githubProfile = githubProfile
         self.author = author

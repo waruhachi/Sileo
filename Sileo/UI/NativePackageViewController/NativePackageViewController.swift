@@ -9,20 +9,23 @@
 import UIKit
 
 protocol PackageActions: UIViewController {
-    @available (iOS 13.0, *)
+    @available(iOS 13.0, *)
     func actions() -> [UIAction]
 }
 
 class NativePackageViewController {
     public class func viewController(for package: Package) -> PackageActions {
-        let packageVC = PackageViewController(nibName: "PackageViewController", bundle: nil)
+        let packageVC = PackageViewController(
+            nibName: "PackageViewController",
+            bundle: nil
+        )
         packageVC.package = package
         return packageVC
     }
 }
 
 /*
- 
+
 import DepictionKit
 import MessageUI
 import Evander
@@ -34,16 +37,16 @@ protocol PackageActions: UIViewController {
 }
 
 class NativePackageViewController: SileoViewController, PackageActions {
-    
+
     public var package: Package
     public var installedPackage: Package?
     private var depictionLink: URL?
     private var depictionHeader: URL?
-    
+
     private var allowNavbarUpdates = false
     private var isUpdatingPurchaseStatus = false
     private var currentNavBarOpacity = CGFloat(0)
-    
+
     public lazy var downloadButton: PackageQueueButton = {
         let button = PackageQueueButton()
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -51,7 +54,7 @@ class NativePackageViewController: SileoViewController, PackageActions {
         button.viewControllerForPresentation = self
         button.setContentHuggingPriority(UILayoutPriority(252), for: .horizontal)
         button.setContentCompressionResistancePriority(UILayoutPriority(752), for: .horizontal)
-        
+
         return button
     }()
     public var packageIconView: PackageIconView = {
@@ -81,7 +84,7 @@ class NativePackageViewController: SileoViewController, PackageActions {
         view.backgroundColor = .clear
         view.translatesAutoresizingMaskIntoConstraints = false
         view.heightAnchor.constraint(equalToConstant: 120).isActive = true
-        
+
         let labelContainer = UIStackView()
         labelContainer.translatesAutoresizingMaskIntoConstraints = false
         labelContainer.alignment = .fill
@@ -90,28 +93,28 @@ class NativePackageViewController: SileoViewController, PackageActions {
         labelContainer.spacing = 4
         labelContainer.addArrangedSubview(packageNameLabel)
         labelContainer.addArrangedSubview(authorLabel)
-        
+
         view.addSubview(packageIconView)
         view.addSubview(labelContainer)
         view.addSubview(downloadButton)
-        
+
         NSLayoutConstraint.activate([
             packageIconView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
             packageIconView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             packageIconView.heightAnchor.constraint(equalToConstant: 60),
             packageIconView.widthAnchor.constraint(equalToConstant: 60),
-            
+
             labelContainer.leadingAnchor.constraint(equalTo: packageIconView.trailingAnchor, constant: 10),
             labelContainer.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             labelContainer.heightAnchor.constraint(equalToConstant: 45),
-            
+
             downloadButton.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             downloadButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
             downloadButton.leadingAnchor.constraint(equalTo: labelContainer.trailingAnchor, constant: -10)
         ])
         return view
     }()
-    
+
     public lazy var depiction: DepictionContainer = {
         DepictionContainer(presentationController: self, theme: theme, delegate: self)
     }()
@@ -126,7 +129,7 @@ class NativePackageViewController: SileoViewController, PackageActions {
         view.contentMode = .scaleAspectFill
         return view
     }()
-    
+
     public lazy var scrollView: UIScrollView = {
         let view = UIScrollView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -140,7 +143,7 @@ class NativePackageViewController: SileoViewController, PackageActions {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    
+
     private lazy var shareButton: UIButton = {
         let shareButton = UIButton(type: .custom)
         shareButton.setImage(UIImage(named: "More"), for: .normal)
@@ -149,7 +152,7 @@ class NativePackageViewController: SileoViewController, PackageActions {
         return shareButton
     }()
     private lazy var navBarShareButtonItem = UIBarButtonItem(customView: shareButton)
-    
+
     private var packageNavBarIconView = PackageIconView(frame: CGRect(origin: .zero, size: CGSize(width: 32, height: 32)))
     private lazy var packageNavBarIconViewController: UIView = {
         let view = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 50, height: 32)))
@@ -158,7 +161,7 @@ class NativePackageViewController: SileoViewController, PackageActions {
         packageNavBarIconView.alpha = 0
         return view
     }()
-    
+
     private lazy var navBarDownloadButton: PackageQueueButton = {
         let view = PackageQueueButton()
         view.viewControllerForPresentation = self
@@ -166,7 +169,7 @@ class NativePackageViewController: SileoViewController, PackageActions {
         return view
     }()
     private lazy var navBarDownloadButtonItem = UIBarButtonItem(customView: navBarDownloadButton)
-    
+
     public var theme: Theme {
         Theme(text_color: .sileoLabel,
               background_color: .sileoBackgroundColor,
@@ -174,7 +177,7 @@ class NativePackageViewController: SileoViewController, PackageActions {
               separator_color: .sileoSeparatorColor,
               dark_mode: UIColor.isDarkModeEnabled)
     }
-    
+
     public class func viewController(for package: Package) -> PackageActions {
         if package.nativeDepiction == nil {
             let packageVC = PackageViewController(nibName: "PackageViewController", bundle: nil)
@@ -183,23 +186,23 @@ class NativePackageViewController: SileoViewController, PackageActions {
         }
         return NativePackageViewController(package: package)
     }
-    
+
     init(package: Package) {
         self.package = package
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         let collapsed = splitViewController?.isCollapsed ?? false
         let navController = collapsed ? (splitViewController?.viewControllers[0] as? UINavigationController) : self.navigationController
         navController?.setNavigationBarHidden(true, animated: true)
-        
+
         view.addSubview(scrollView)
         contentView.addSubview(headerImageView)
         contentView.addSubview(depiction)
@@ -210,21 +213,21 @@ class NativePackageViewController: SileoViewController, PackageActions {
             scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            
+
             headerImageViewTopAnchor,
             headerImageViewLeadingAnchor,
             headerImageViewTrailingAnchor,
             headerImageViewHeightAnchor,
-            
+
             packageContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             packageContainer.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             packageContainer.topAnchor.constraint(equalTo: headerImageView.bottomAnchor),
-            
+
             depiction.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             depiction.topAnchor.constraint(equalTo: packageContainer.bottomAnchor),
             depiction.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             depiction.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            
+
             contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
             contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
@@ -240,7 +243,7 @@ class NativePackageViewController: SileoViewController, PackageActions {
         navigationItem.largeTitleDisplayMode = .never
         navigationController?.navigationBar.isTranslucent = true
         navigationItem.titleView = packageNavBarIconViewController
-        
+
         extendedLayoutIncludesOpaqueBars = true
         edgesForExtendedLayout = [.top, .bottom]
 
@@ -251,9 +254,9 @@ class NativePackageViewController: SileoViewController, PackageActions {
                                                selector: #selector(updateSileoColors),
                                                name: SileoThemeManager.sileoChangedThemeNotification,
                                                object: nil)
-        
+
         navigationItem.rightBarButtonItems = [navBarShareButtonItem]
-        
+
         /*
         if isModal {
             self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: String(localizationKey: "Done"),
@@ -265,22 +268,22 @@ class NativePackageViewController: SileoViewController, PackageActions {
         updateSileoColors()
         reloadPackage()
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
+
         let collapsed = splitViewController?.isCollapsed ?? false
         let navController = collapsed ? (splitViewController?.viewControllers[0] as? UINavigationController) : navigationController
-        
+
         allowNavbarUpdates = false
         currentNavBarOpacity = navController?.navigationBar._backgroundOpacity ?? 1
-        
+
         FRUIView.animate(withDuration: 0.8) {
             navController?.navigationBar.tintColor = UINavigationBar.appearance().tintColor
             navController?.navigationBar._backgroundOpacity = 1
         }
     }
-    
+
     private func reloadPackage() {
         if package.packageFileURL == nil {
             if let newestPackage = PackageListManager.shared.newestPackage(identifier: package.package, repoContext: nil) {
@@ -290,7 +293,7 @@ class NativePackageViewController: SileoViewController, PackageActions {
 
         let installedPackage = PackageListManager.shared.installedPackage(identifier: package.package)
         self.installedPackage = installedPackage
-        
+
         if let headerURL = package.rawControl["header"],
            let header = URL(string: headerURL) {
             if header != depictionHeader {
@@ -320,17 +323,17 @@ class NativePackageViewController: SileoViewController, PackageActions {
             let rawIcon = package.icon {
             EvanderNetworking.image(url: rawIcon, condition: { [weak self] in self?.package.icon == rawIcon }, imageViews: [packageIconView, packageNavBarIconView], fallback: package.defaultIcon)
         }
-        
+
         packageNameLabel.text = package.name
         authorLabel.text = ControlFileParser.authorName(string: package.author ?? "")
         downloadButton.package = package
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         self.statusBarStyle = .default
-        
+
         self.navigationController?.navigationBar._backgroundOpacity = currentNavBarOpacity
         self.navigationController?.navigationBar.tintColor = .white
         allowNavbarUpdates = true
@@ -345,17 +348,17 @@ class NativePackageViewController: SileoViewController, PackageActions {
         navBarDownloadButton.tintColor = depiction.effectiveTintColor
         navBarDownloadButton.updateStyle()
     }
-    
+
     override var previewActionItems: [UIPreviewActionItem] {
         downloadButton.actionItems().map({ $0.previewAction() })
     }
-    
+
     @available (iOS 13.0, *)
     func actions() -> [UIAction] {
         _ = self.view
         return downloadButton.actionItems().map({ $0.action() })
     }
-    
+
     @objc func sharePackage(_ sender: Any?) {
         let sharePopup = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         let shareAction = UIAlertAction(title: String(localizationKey: "Package_Share_Action"), style: .default) { [weak self] _ in
@@ -370,7 +373,7 @@ class NativePackageViewController: SileoViewController, PackageActions {
             self.present(activityViewController, animated: true, completion: nil)
         }
         sharePopup.addAction(shareAction)
-        
+
         if let author = package.author,
             let email = ControlFileParser.authorEmail(string: author) {
             let moreByDeveloper = UIAlertAction(title: String(localizationKey: "Package_Developer_Find_Action"
@@ -382,7 +385,7 @@ class NativePackageViewController: SileoViewController, PackageActions {
                 self.navigationController?.pushViewController(packagesListController, animated: true)
             }
             sharePopup.addAction(moreByDeveloper)
-        
+
             let packageSupport = UIAlertAction(title: String(localizationKey: "Package_Support_Action"), style: .default) { [weak self] _ in
                 guard let `self` = self else { return }
                 let package = self.package
@@ -403,7 +406,7 @@ class NativePackageViewController: SileoViewController, PackageActions {
             }
             sharePopup.addAction(packageSupport)
         }
-        
+
         if installedPackage != nil {
             let ignoreUpdatesText = installedPackage?.wantInfo == .hold ?
                 String(localizationKey: "Package_Hold_Disable_Action") : String(localizationKey: "Package_Hold_Enable_Action")
@@ -424,7 +427,7 @@ class NativePackageViewController: SileoViewController, PackageActions {
             }
             sharePopup.addAction(ignoreUpdates)
         }
-        
+
         let wishListText = WishListManager.shared.isPackageInWishList(package.package) ?
             String(localizationKey: "Package_Wishlist_Remove") : String(localizationKey: "Package_Wishlist_Add")
         let wishlist = UIAlertAction(title: wishListText, style: .default) { [weak package] _ in
@@ -436,17 +439,17 @@ class NativePackageViewController: SileoViewController, PackageActions {
             }
         }
         sharePopup.addAction(wishlist)
-        
+
         let cancelAction = UIAlertAction(title: String(localizationKey: "Cancel"), style: .cancel, handler: nil)
         sharePopup.addAction(cancelAction)
-        
+
         if UIDevice.current.userInterfaceIdiom == .pad {
             sharePopup.popoverPresentationController?.sourceView = shareButton
         }
         sharePopup.view.tintColor = depiction.effectiveTintColor
         self.present(sharePopup, animated: true)
     }
-    
+
     @objc func dismissImmediately() {
         // Dismiss this view controller.
         self.dismiss(animated: true, completion: nil)
@@ -455,7 +458,7 @@ class NativePackageViewController: SileoViewController, PackageActions {
 }
 
 extension NativePackageViewController: DepictionDelegate {
-    
+
     func handleAction(action: DepictionAction) {
         switch action {
         case .openURL(url: let url, external: let external):
@@ -488,7 +491,7 @@ extension NativePackageViewController: DepictionDelegate {
             break
         }
     }
-    
+
     func depictionError(error: String) {
         let alert = UIAlertController(title: "Depiction Error", message: error, preferredStyle: .alert)
         alert.view.tintColor = .tintColor
@@ -497,7 +500,7 @@ extension NativePackageViewController: DepictionDelegate {
         }))
         self.present(alert, animated: true)
     }
-    
+
     func packageView(for package: DepictionPackage) -> UIView {
         let cell: PackageCollectionViewCell = Bundle.main.loadNibNamed("PackageCollectionViewCell", owner: self, options: nil)?[0] as! PackageCollectionViewCell
         let action: PackageControlView = {
@@ -528,7 +531,7 @@ extension NativePackageViewController: DepictionDelegate {
         }
         return view
     }
-    
+
     func image(for url: URL, completion: @escaping ((UIImage?) -> Void)) -> Bool {
         if let image = EvanderNetworking.image(url: url, { image in
             completion(image)
@@ -537,7 +540,7 @@ extension NativePackageViewController: DepictionDelegate {
         }
         return true
     }
-    
+
     @objc private func didSelectPackage(_ cell: PackageControlView) {
         guard let package = cell.package else { return }
         let viewController = NativePackageViewController.viewController(for: package)
@@ -550,7 +553,7 @@ extension NativePackageViewController: DepictionDelegate {
 }
 
 extension NativePackageViewController: PackageQueueButtonDataProvider {
-    
+
     func updatePurchaseStatus() {
         guard !isUpdatingPurchaseStatus,
               let sourceRepo = package.sourceRepo else { return }
@@ -573,10 +576,10 @@ extension NativePackageViewController: PackageQueueButtonDataProvider {
             }
         }
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
+
         self.scrollViewDidScroll(self.scrollView)
     }
 
@@ -592,7 +595,7 @@ extension NativePackageViewController: MFMailComposeViewControllerDelegate {
 }
 
 extension NativePackageViewController: UIScrollViewDelegate {
-    
+
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let headerBounds = headerImageView.bounds
         /*
@@ -605,7 +608,7 @@ extension NativePackageViewController: UIScrollViewDelegate {
         if offset > 0 {
             offset = 0
         }
-        
+
         // doing the magic on the nav bar "GET" button and package icon
         let downloadButtonPos = downloadButton.convert(downloadButton.bounds, to: scrollView)
         let container = CGRect(origin: CGPoint(x: scrollView.contentOffset.x,
@@ -622,7 +625,7 @@ extension NativePackageViewController: UIScrollViewDelegate {
         } else if navBarAlphaOffset < 0 {
             navBarAlphaOffset = 0
         }
-        
+
         FRUIView.animate(withDuration: 0.3) { [weak self] in
             guard let `self` = self else { return }
             self.shareButton.alpha = 1 - navBarAlphaOffset
@@ -640,9 +643,9 @@ extension NativePackageViewController: UIScrollViewDelegate {
                 self.navigationItem.rightBarButtonItems = [self.navBarDownloadButtonItem]
             }
         }
-        
+
         scrollView.scrollIndicatorInsets.top = max(headerBounds.maxY - scrollView.contentOffset.y, self.view.safeAreaInsets.top)
-        
+
         guard allowNavbarUpdates else {
             return
         }
@@ -681,14 +684,14 @@ extension NativePackageViewController: UIScrollViewDelegate {
         }
         self.setNeedsStatusBarAppearanceUpdate()
     }
-    
+
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         // for those wondering about the magic numbers and what's going on here:
         // This is the spring effect on scrolling (aka step to start or step to after header
         // 113 = header imageView height - nav bar height and 56 is simply for setitng the step boundary, aka halfway
         // if you don't like this, we can implement the variables from above, instead, but imo it's a waste of time
         let scrollViewOffset = scrollView.contentOffset.y + UIApplication.shared.statusBarFrame.height
-        
+
         if scrollViewOffset < 66 {
             scrollView.setContentOffset(.zero, animated: true)
         } else if scrollViewOffset > 66 && scrollViewOffset < 133 {
@@ -698,7 +701,7 @@ extension NativePackageViewController: UIScrollViewDelegate {
 }
 
 extension NativePackageViewController {
-    
+
     public var isModal: Bool {
         let presentingIsModal = presentingViewController != nil
         let presentingIsNavigation = navigationController?.presentingViewController?.presentedViewController == navigationController

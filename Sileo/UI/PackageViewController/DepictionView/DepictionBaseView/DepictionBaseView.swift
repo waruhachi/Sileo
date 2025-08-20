@@ -19,26 +19,35 @@ public protocol DepictionViewProtocol: DepictionViewDelegate {
 }
 
 open class DepictionBaseView: UIView, DepictionViewProtocol {
-    
+
     internal weak var parentViewController: UIViewController?
     public weak var delegate: DepictionViewDelegate?
     internal var defaultTintColor: UIColor?
     private(set) var isActionable: Bool
     public var isHighlighted: Bool = false
 
-    class func view(dictionary: [String: Any], viewController: UIViewController, tintColor: UIColor?, isActionable: Bool) -> DepictionBaseView? {
+    class func view(
+        dictionary: [String: Any],
+        viewController: UIViewController,
+        tintColor: UIColor?,
+        isActionable: Bool
+    ) -> DepictionBaseView? {
         guard var className = dictionary["class"] as? String else {
             return nil
         }
-        
+
         if className == "DepictionMarkdownView" {
             if let rawFormat = dictionary["useRawFormat"] as? Bool,
-                rawFormat == true {
+                rawFormat == true
+            {
                 className = "DepictionMarkdownViewSlow"
             }
         }
-        
-        guard let rawclass = Bundle.main.classNamed("Sileo.\(className)") as? DepictionBaseView.Type else {
+
+        guard
+            let rawclass = Bundle.main.classNamed("Sileo.\(className)")
+                as? DepictionBaseView.Type
+        else {
             return nil
         }
 
@@ -46,15 +55,28 @@ open class DepictionBaseView: UIView, DepictionViewProtocol {
             return nil
         }
 
-        var tintColor: UIColor = tintColor ?? UINavigationBar.appearance().tintColor
+        var tintColor: UIColor =
+            tintColor ?? UINavigationBar.appearance().tintColor
         if let tintColorStr = dictionary["tintColor"] as? String {
-            tintColor = UIColor(css: tintColorStr) ?? UINavigationBar.appearance().tintColor
+            tintColor =
+                UIColor(css: tintColorStr)
+                ?? UINavigationBar.appearance().tintColor
         }
 
-        return rawclass.init(dictionary: dictionary, viewController: viewController, tintColor: tintColor, isActionable: isActionable)
+        return rawclass.init(
+            dictionary: dictionary,
+            viewController: viewController,
+            tintColor: tintColor,
+            isActionable: isActionable
+        )
     }
 
-    required public init?(dictionary: [String: Any], viewController: UIViewController, tintColor: UIColor, isActionable: Bool) {
+    required public init?(
+        dictionary: [String: Any],
+        viewController: UIViewController,
+        tintColor: UIColor,
+        isActionable: Bool
+    ) {
         parentViewController = viewController
 
         self.defaultTintColor = tintColor

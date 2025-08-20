@@ -8,19 +8,18 @@
 
 import Foundation
 
-
 struct DPKGArchitecture {
-    
+
     enum Architecture: String, Decodable {
         case rootful = "iphoneos-arm"
         case rootless = "iphoneos-arm64"
         case intel = "darwin-amd64"
         case applesilicon = "darwin-arm64"
     }
-    
+
     let primary: Architecture
     let foreign: Set<Architecture>
-    
+
     public func valid(arch: String?) -> Bool {
         guard let arch else {
             return false
@@ -33,7 +32,7 @@ struct DPKGArchitecture {
         }
         return arch == primary || foreign.contains(arch)
     }
-    
+
     public func valid(arch: DPKGArchitecture?) -> Bool {
         guard let arch else {
             return false
@@ -52,12 +51,12 @@ struct DPKGArchitecture {
         }
         return false
     }
-    
+
     public func valid(arch: Architecture?) -> Bool {
         guard let arch else {
             return false
         }
         return self.primary == arch || self.foreign.contains(arch)
     }
-    
+
 }

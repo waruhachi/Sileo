@@ -6,8 +6,8 @@
 //  Copyright © 2022 Sileo Team. All rights reserved.
 //
 
-import Foundation
 import Down
+import Foundation
 
 public struct DepictionFontCollection: FontCollection {
 
@@ -18,6 +18,10 @@ public struct DepictionFontCollection: FontCollection {
     public var heading5 = DownFont.boldSystemFont(ofSize: 14)
     public var heading6 = DownFont.boldSystemFont(ofSize: 12)
     public var body = DownFont.systemFont(ofSize: 16)
-    public var code = DownFont(name: "menlo", size: 16) ?? .systemFont(ofSize: 16)
-    public var listItemPrefix = DownFont.monospacedDigitSystemFont(ofSize: 16, weight: .regular)
+    public var code =
+        DownFont(name: "menlo", size: 16) ?? .systemFont(ofSize: 16)
+    public var listItemPrefix = DownFont.monospacedDigitSystemFont(
+        ofSize: 16,
+        weight: .regular
+    )
 }

@@ -25,12 +25,14 @@ final class XZ {
             fclose(infile)
         }
         let destinationURL = path.appendingPathExtension("clean")
-        guard let fout = fopen(destinationURL.path, "wb") else { return .failure(.fileLoad) }
+        guard let fout = fopen(destinationURL.path, "wb") else {
+            return .failure(.fileLoad)
+        }
         defer {
             fclose(fout)
         }
         let ret = decompressXz(infile, fout, type.rawValue)
-        if (ret == 0) {
+        if ret == 0 {
             return .success(destinationURL)
         } else {
             return .failure(XZError(error: ret))
@@ -47,7 +49,7 @@ enum XZError: String, Error {
     case formatError = "Input file is not correct format"
     case corrupt = "Input file is corrupt"
     case unknown = "Unknown Error"
-    
+
     init(error: UInt8) {
         switch error {
         case 1: self = .allocation
@@ -61,4 +63,3 @@ enum XZError: String, Error {
         }
     }
 }
-

@@ -19,13 +19,13 @@ class EditableTableView: UITableView {
             super.isEditing = true
         }
     }
-    
+
     override func setEditing(_ editing: Bool, animated: Bool) {
         Thread.mainBlock {
             super.setEditing(true, animated: animated)
         }
     }
-    
+
     override func accessibilityPerformEscape() -> Bool {
         false
     }

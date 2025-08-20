@@ -13,26 +13,28 @@
     static LaunchAsRoot *singleton;
     static dispatch_once_t token;
     dispatch_once(&token, ^{
-        singleton = [[self alloc] init];
+      singleton = [[self alloc] init];
     });
     return singleton;
 }
 
--(NSXPCConnection *)connection {
-    return [[NSXPCConnection alloc] initWithMachServiceName:@"SileoRootDaemon" options: NSXPCConnectionPrivileged];
+- (NSXPCConnection *)connection {
+    return [[NSXPCConnection alloc]
+        initWithMachServiceName:@"SileoRootDaemon"
+                        options:NSXPCConnectionPrivileged];
 }
 
--(BOOL)installDaemon {
-    AuthorizationItem authItem      = { kSMRightBlessPrivilegedHelper, 0, NULL, 0 };
-    AuthorizationRights authRights  = { 1, &authItem };
-    AuthorizationFlags flags        =   kAuthorizationFlagDefaults              |
-    kAuthorizationFlagInteractionAllowed    |
-    kAuthorizationFlagPreAuthorize          |
-    kAuthorizationFlagExtendRights;
+- (BOOL)installDaemon {
+    AuthorizationItem authItem = {kSMRightBlessPrivilegedHelper, 0, NULL, 0};
+    AuthorizationRights authRights = {1, &authItem};
+    AuthorizationFlags flags =
+        kAuthorizationFlagDefaults | kAuthorizationFlagInteractionAllowed |
+        kAuthorizationFlagPreAuthorize | kAuthorizationFlagExtendRights;
 
     AuthorizationRef authRef = NULL;
 
-    OSStatus status = AuthorizationCreate(&authRights, kAuthorizationEmptyEnvironment, flags, &authRef);
+    OSStatus status = AuthorizationCreate(
+        &authRights, kAuthorizationEmptyEnvironment, flags, &authRef);
     if (status != errAuthorizationSuccess) {
         exit(0);
     }

@@ -6,8 +6,8 @@
 //  Copyright © 2022 Sileo Team. All rights reserved.
 //
 
-import Foundation
 import AVKit
+import Foundation
 
 class DepictionVideoView: DepictionBaseView {
     let alignment: Int
@@ -25,7 +25,12 @@ class DepictionVideoView: DepictionBaseView {
     var showPlaybackControls: Bool = false
     var loopEnabled: Bool = false
 
-    required init?(dictionary: [String: Any], viewController: UIViewController, tintColor: UIColor, isActionable: Bool) {
+    required init?(
+        dictionary: [String: Any],
+        viewController: UIViewController,
+        tintColor: UIColor,
+        isActionable: Bool
+    ) {
         guard let urlStr = dictionary["URL"] as? String else {
             return nil
         }
@@ -44,10 +49,16 @@ class DepictionVideoView: DepictionBaseView {
         }
 
         autoPlayEnabled = (dictionary["autoplay"] as? Bool) ?? false
-        showPlaybackControls = (dictionary["showPlaybackControls"] as? Bool) ?? true
+        showPlaybackControls =
+            (dictionary["showPlaybackControls"] as? Bool) ?? true
         loopEnabled = (dictionary["loop"] as? Bool) ?? false
 
-        super.init(dictionary: dictionary, viewController: viewController, tintColor: tintColor, isActionable: isActionable)
+        super.init(
+            dictionary: dictionary,
+            viewController: viewController,
+            tintColor: tintColor,
+            isActionable: isActionable
+        )
 
         let cornerRadius = (dictionary["cornerRadius"] as? CGFloat) ?? 0
 
@@ -57,7 +68,10 @@ class DepictionVideoView: DepictionBaseView {
         self.player = player
 
         if loopEnabled {
-            playerLooper = AVPlayerLooper(player: player, templateItem: playerItem)
+            playerLooper = AVPlayerLooper(
+                player: player,
+                templateItem: playerItem
+            )
         }
 
         playerViewController = AVPlayerViewController()
@@ -94,17 +108,20 @@ class DepictionVideoView: DepictionBaseView {
 
         var x = CGFloat(0)
         switch alignment {
-        case 2: do {
-            x = self.bounds.width - width
-            break
+        case 2:
+            do {
+                x = self.bounds.width - width
+                break
             }
-        case 1: do {
-            x = (self.bounds.width - width)/2.0
-            break
+        case 1:
+            do {
+                x = (self.bounds.width - width) / 2.0
+                break
             }
-        default: do {
-            x = 0
-            break
+        default:
+            do {
+                x = 0
+                break
             }
         }
 

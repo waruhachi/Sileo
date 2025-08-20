@@ -13,13 +13,18 @@ enum APTParserErrors: LocalizedError {
     case blankRequest
     case failedDataEncoding
     case blankJsonOutput(error: String)
-    
+
     var errorDescription: String? {
         switch self {
-        case .blankJsonOutput(let error): return "APT was unable to find this package. Please try refreshing your sources\n \(error)"
-        case .failedDataEncoding: return "APT returned an invalid response that cannot be parsed."
-        case .missingSileoConf: return "Your Sileo install is incomplete. Please reinstall"
-        case .blankRequest: return "Internal Error: Blank Request sent for packages"
+        case .blankJsonOutput(let error):
+            return
+                "APT was unable to find this package. Please try refreshing your sources\n \(error)"
+        case .failedDataEncoding:
+            return "APT returned an invalid response that cannot be parsed."
+        case .missingSileoConf:
+            return "Your Sileo install is incomplete. Please reinstall"
+        case .blankRequest:
+            return "Internal Error: Blank Request sent for packages"
         }
     }
 }
@@ -44,8 +49,14 @@ struct RawAPTOutput: Decodable {
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
 
-        self.operations = try? values.decodeIfPresent([APTOperation].self, forKey: .operations)
-        self.brokenPackages = try? values.decodeIfPresent(ErrorParserWrapper.self, forKey: .brokenPackages)
+        self.operations = try? values.decodeIfPresent(
+            [APTOperation].self,
+            forKey: .operations
+        )
+        self.brokenPackages = try? values.decodeIfPresent(
+            ErrorParserWrapper.self,
+            forKey: .brokenPackages
+        )
     }
 }
 
@@ -71,11 +82,12 @@ struct APTOperation: Decodable {
 }
 
 struct APTBrokenPackage: Decodable, Hashable {
-    
+
     static func == (lhs: APTBrokenPackage, rhs: APTBrokenPackage) -> Bool {
-        lhs.packageID == rhs.packageID && lhs.conflictingPackages == rhs.conflictingPackages
+        lhs.packageID == rhs.packageID
+            && lhs.conflictingPackages == rhs.conflictingPackages
     }
-    
+
     struct ConflictingPackage: Decodable, Hashable {
 
         // swiftlint:disable nesting
@@ -95,20 +107,22 @@ struct APTBrokenPackage: Decodable, Hashable {
 
         let package: String
         let conflict: Conflict
-        
+
         func hash(into hasher: inout Hasher) {
             hasher.combine(package)
             hasher.combine(conflict)
         }
-        
-        static func == (lhs: ConflictingPackage, rhs: ConflictingPackage) -> Bool {
+
+        static func == (lhs: ConflictingPackage, rhs: ConflictingPackage)
+            -> Bool
+        {
             lhs.package == rhs.package && lhs.conflict == rhs.conflict
         }
     }
 
     let packageID: String
     let conflictingPackages: [ConflictingPackage]
-    
+
     func hash(into hasher: inout Hasher) {
         hasher.combine(packageID)
         hasher.combine(conflictingPackages)
@@ -139,12 +153,18 @@ struct ErrorParserWrapper: Decodable {
 
         for package in container.allKeys {
             // These are the individual brokenPackages given by APT (It's a double nested array because of the way the JSON patch is)
-            let wrappedConflictingPackages = try container.decode([[APTBrokenPackage.ConflictingPackage]].self, forKey: package)
+            let wrappedConflictingPackages = try container.decode(
+                [[APTBrokenPackage.ConflictingPackage]].self,
+                forKey: package
+            )
 
             // ErrorParserWrapper is merely used to create an APTBrokenPackage
             // That's why the package is created manually, to prevent unnecessary data nesting
             for conflictingPackages in wrappedConflictingPackages {
-                let brokenPackage = APTBrokenPackage(packageID: package.stringValue, conflictingPackages: conflictingPackages)
+                let brokenPackage = APTBrokenPackage(
+                    packageID: package.stringValue,
+                    conflictingPackages: conflictingPackages
+                )
                 brokenPackages.append(brokenPackage)
             }
         }
@@ -155,13 +175,16 @@ struct ErrorParserWrapper: Decodable {
 
 extension APTWrapper {
     // APT syntax: a- = remove a; b = install b
-    public class func operationList(installList: Set<DownloadPackage>, removeList: Set<DownloadPackage>) throws -> APTOutput {
+    public class func operationList(
+        installList: Set<DownloadPackage>,
+        removeList: Set<DownloadPackage>
+    ) throws -> APTOutput {
         // Error check stuff
         guard !(installList.isEmpty && removeList.isEmpty) else {
             // What the hell are you passing, requesting an operationList without any packages?
             throw APTParserErrors.blankRequest
         }
-        
+
         var queryArguments = [
             "-sqf",
             "--allow-remove-essential",
@@ -176,7 +199,7 @@ extension APTWrapper {
             "-oAPT::Get::Show-User-Simulation-Note=False",
             "-oAPT::Format::for-sileo=true",
             "-oAPT::Format::JSON=true",
-            "install", "--reinstall"
+            "install", "--reinstall",
         ]
         var packageOperations: [String] = []
         for downloadPackage in installList {
@@ -184,10 +207,15 @@ extension APTWrapper {
             // if it has a / that means it's the path which is a local install
             if downloadPackage.package.package.contains("/") {
                 // APT will take the raw package path for install
-                packageOperations.append(downloadPackage.package.debPath ?? downloadPackage.package.package)
+                packageOperations.append(
+                    downloadPackage.package.debPath
+                        ?? downloadPackage.package.package
+                )
             } else {
                 // Force the exact version of the package we downloaded from the repository
-                packageOperations.append("\(downloadPackage.package.packageID)=\(downloadPackage.package.version)")
+                packageOperations.append(
+                    "\(downloadPackage.package.packageID)=\(downloadPackage.package.version)"
+                )
             }
         }
 
@@ -200,14 +228,22 @@ extension APTWrapper {
         var aptStdout = ""
         var aptError = ""
 
-        (_, aptStdout, aptError) = spawn(command: CommandPath.aptget, args: ["apt-get"] + queryArguments + packageOperations)
-        let aptJsonOutput = try normalizeAptOutput(rawOutput: aptStdout, error: aptError)
-        
+        (_, aptStdout, aptError) = spawn(
+            command: CommandPath.aptget,
+            args: ["apt-get"] + queryArguments + packageOperations
+        )
+        let aptJsonOutput = try normalizeAptOutput(
+            rawOutput: aptStdout,
+            error: aptError
+        )
+
         return aptJsonOutput
     }
 
     // We need to take multiple outputs and make it a full JSON object in some cases, while others we can just serialize the full struct
-    private class func normalizeAptOutput(rawOutput: String, error: String) throws -> APTOutput {
+    private class func normalizeAptOutput(rawOutput: String, error: String)
+        throws -> APTOutput
+    {
         let decoder = ZippyJSONDecoder()
         var aptOutput = APTOutput()
 
@@ -215,7 +251,9 @@ extension APTWrapper {
         // If it's separate JSON, we will serialize immediately
         // If it's a full JSON object, we will parse it later
         for rawLine in rawOutput.components(separatedBy: "\n") {
-            let cleanLine = rawLine.trimmingCharacters(in: .whitespacesAndNewlines)
+            let cleanLine = rawLine.trimmingCharacters(
+                in: .whitespacesAndNewlines
+            )
 
             // Seperated JSON Objects parsing (Procursus)
             if cleanLine.hasPrefix("{") && cleanLine.hasSuffix("}") {
@@ -224,11 +262,17 @@ extension APTWrapper {
                     throw APTParserErrors.failedDataEncoding
                 }
 
-                if let operation = try? decoder.decode(APTOperation.self, from: data) {
+                if let operation = try? decoder.decode(
+                    APTOperation.self,
+                    from: data
+                ) {
                     aptOutput.operations.append(operation)
                 }
 
-                if let error = try? decoder.decode(ErrorParserWrapper.self, from: data) {
+                if let error = try? decoder.decode(
+                    ErrorParserWrapper.self,
+                    from: data
+                ) {
                     aptOutput.conflicts += error.brokenPackages
                 }
             }
@@ -236,12 +280,15 @@ extension APTWrapper {
 
         // If there was no decodeable output, we need to parse as one big object (Elucubratus)
         if aptOutput.conflicts.isEmpty && aptOutput.operations.isEmpty {
-            let cleanOutput = rawOutput.trimmingCharacters(in: .whitespacesAndNewlines)
-                .replacingOccurrences(of: "\n", with: "")
+            let cleanOutput = rawOutput.trimmingCharacters(
+                in: .whitespacesAndNewlines
+            )
+            .replacingOccurrences(of: "\n", with: "")
 
             // We need a substring of the JSON object only
             guard let openingBracket = cleanOutput.firstIndex(of: "{"),
-                  let closingBracket = cleanOutput.lastIndex(of: "}") else {
+                let closingBracket = cleanOutput.lastIndex(of: "}")
+            else {
                 throw APTParserErrors.blankJsonOutput(error: error)
             }
 
@@ -249,7 +296,7 @@ extension APTWrapper {
                 // These are normalized to have easier JSON parsing
                 .replacingOccurrences(of: "CandidateVersion", with: "Version")
                 .replacingOccurrences(of: "CurrentVersion", with: "Version")
-                .appending("}") // Appended this because we cut it off in our substring
+                .appending("}")  // Appended this because we cut it off in our substring
 
             guard let data = jsonObject.data(using: .utf8) else {
                 throw APTParserErrors.failedDataEncoding

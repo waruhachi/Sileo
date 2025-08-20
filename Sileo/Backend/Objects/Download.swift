@@ -6,8 +6,8 @@
 //  Copyright © 2022 Sileo Team. All rights reserved.
 //
 
-import Foundation
 import Evander
+import Foundation
 
 final class Download {
     var package: Package
@@ -22,7 +22,7 @@ final class Download {
     var completed = false
     var started = false
     var message: String?
-    
+
     init(package: Package) {
         self.package = package
     }

@@ -9,7 +9,11 @@
 import Foundation
 
 protocol DownloadOverrideProviding {
-    func downloadURL(for package: Package, from repo: Repo, completionHandler: @escaping (String?, URL?) -> Void) -> Bool
-    
+    func downloadURL(
+        for package: Package,
+        from repo: Repo,
+        completionHandler: @escaping (String?, URL?) -> Void
+    ) -> Bool
+
     var hashableObject: AnyHashable { get }
 }

@@ -11,31 +11,37 @@ import Foundation
 class SileoSelectionView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+
         weak var weakSelf = self
-        NotificationCenter.default.addObserver(weakSelf as Any,
-                                               selector: #selector(updateSileoColors),
-                                               name: SileoThemeManager.sileoChangedThemeNotification,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            weakSelf as Any,
+            selector: #selector(updateSileoColors),
+            name: SileoThemeManager.sileoChangedThemeNotification,
+            object: nil
+        )
         self.backgroundColor = .sileoHighlightColor
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        
+
         weak var weakSelf = self
-        NotificationCenter.default.addObserver(weakSelf as Any,
-                                               selector: #selector(updateSileoColors),
-                                               name: SileoThemeManager.sileoChangedThemeNotification,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            weakSelf as Any,
+            selector: #selector(updateSileoColors),
+            name: SileoThemeManager.sileoChangedThemeNotification,
+            object: nil
+        )
         self.backgroundColor = .sileoHighlightColor
     }
-    
+
     @objc func updateSileoColors() {
         self.backgroundColor = .sileoHighlightColor
     }
-    
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+
+    override func traitCollectionDidChange(
+        _ previousTraitCollection: UITraitCollection?
+    ) {
         updateSileoColors()
     }
 }

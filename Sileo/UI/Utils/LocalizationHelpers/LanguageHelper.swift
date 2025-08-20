@@ -10,7 +10,7 @@ import Evander
 
 enum LocalizedStringType {
     case general, error, categories
-    
+
     /// The table name this string type can be found in.
     var tableName: String? {
         switch self {
@@ -26,9 +26,18 @@ extension String {
     init(localizationKey: String, type: LocalizedStringType = .general) {
         // swiftlint:disable nslocalizedstring_key
         if let bundle = LanguageHelper.shared.primaryBundle {
-            self = NSLocalizedString(localizationKey, tableName: type.tableName, bundle: bundle, comment: "")
+            self = NSLocalizedString(
+                localizationKey,
+                tableName: type.tableName,
+                bundle: bundle,
+                comment: ""
+            )
         } else {
-            self = NSLocalizedString(localizationKey, tableName: type.tableName, comment: "")
+            self = NSLocalizedString(
+                localizationKey,
+                tableName: type.tableName,
+                comment: ""
+            )
         }
     }
 }

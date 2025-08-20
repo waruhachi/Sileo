@@ -18,7 +18,11 @@ class FileNode: TreeNodeProtocol {
 
     var children: [FileNode]?
 
-    init(withIdentifier identifier: String, andChildren children: [FileNode]? = nil, path: String) {
+    init(
+        withIdentifier identifier: String,
+        andChildren children: [FileNode]? = nil,
+        path: String
+    ) {
         self.identifier = identifier
         self.children = children
         self.path = path

@@ -6,8 +6,8 @@
 //  Copyright © 2022 Sileo Team. All rights reserved.
 //
 
-import Foundation
 import Down
+import Foundation
 
 public struct DepictionColorCollection: ColorCollection {
 
@@ -24,5 +24,10 @@ public struct DepictionColorCollection: ColorCollection {
     public var quoteStripe = DownColor.darkGray
     public var thematicBreak = DownColor(white: 0.9, alpha: 1)
     public var listItemPrefix = DownColor.lightGray
-    public var codeBlockBackground = DownColor(red: 0.96, green: 0.97, blue: 0.98, alpha: 1)
+    public var codeBlockBackground = DownColor(
+        red: 0.96,
+        green: 0.97,
+        blue: 0.98,
+        alpha: 1
+    )
 }

@@ -49,8 +49,8 @@
 + (UIColor *_Nullable)colorWithW3CNamedColor:(NSString *_Nonnull)namedColor;
 
 /**
- * Returns a representation of this color as a hex string, of the form "#FFFFFF".
- * Alpha information is not represented.
+ * Returns a representation of this color as a hex string, of the form
+ * "#FFFFFF". Alpha information is not represented.
  */
 - (NSString *_Nullable)hexStringValue;
 
@@ -75,7 +75,6 @@
 
 @end
 
-
 /**
  * Extensions to scan colors in the formats supported by CSS.
  */
@@ -84,32 +83,32 @@
 /**
  * Scan a color hex, RGB, HSL or X11 named color.
  */
-- (BOOL)scanCSSColor:(UIColor *_Nullable * _Nonnull)color;
+- (BOOL)scanCSSColor:(UIColor *_Nullable *_Nonnull)color;
 
 /**
  * Scan an RGB color ("rgb(255, 255, 255)", "rgba(255, 255, 255, 1.0)").
  */
-- (BOOL)scanRGBColor:(UIColor *_Nullable * _Nonnull)color;
+- (BOOL)scanRGBColor:(UIColor *_Nullable *_Nonnull)color;
 
 /**
  * Scan an HSL color ("hsl(359, 100%, 100%)", "hsla(359, 100%, 100%, 1.0)").
  */
-- (BOOL)scanHSLColor:(UIColor *_Nullable * _Nonnull)color;
+- (BOOL)scanHSLColor:(UIColor *_Nullable *_Nonnull)color;
 
 /**
  * Scan a hex color ("#FFFFFF", "#FFF").
  */
-- (BOOL)scanHexColor:(UIColor *_Nullable * _Nonnull)color;
+- (BOOL)scanHexColor:(UIColor *_Nullable *_Nonnull)color;
 
 /**
  * Scan a gray color ("gray(50)", "gray(110, 70%)")
  */
-- (BOOL)scanGrayColor:(UIColor *_Nullable * _Nonnull)color;
+- (BOOL)scanGrayColor:(UIColor *_Nullable *_Nonnull)color;
 
 /**
  * Scan a CSS3/SVG named color. These are similar to the X11 named colors.
  * See: http://www.w3.org/TR/css3-color/#svg-color
  */
-- (BOOL)scanW3CNamedColor:(UIColor *_Nullable * _Nonnull)color;
+- (BOOL)scanW3CNamedColor:(UIColor *_Nullable *_Nonnull)color;
 
 @end

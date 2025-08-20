@@ -11,7 +11,12 @@ import Foundation
 class DepictionMinVersionForceView: DepictionBaseView {
     var containedView: DepictionBaseView?
 
-    required init?(dictionary: [String: Any], viewController: UIViewController, tintColor: UIColor, isActionable: Bool) {
+    required init?(
+        dictionary: [String: Any],
+        viewController: UIViewController,
+        tintColor: UIColor,
+        isActionable: Bool
+    ) {
         guard let view = dictionary["view"] as? [String: Any] else {
             return nil
         }
@@ -22,9 +27,19 @@ class DepictionMinVersionForceView: DepictionBaseView {
             return nil
         }
 
-        super.init(dictionary: dictionary, viewController: viewController, tintColor: tintColor, isActionable: isActionable)
+        super.init(
+            dictionary: dictionary,
+            viewController: viewController,
+            tintColor: tintColor,
+            isActionable: isActionable
+        )
 
-        if let baseView = DepictionBaseView.view(dictionary: view, viewController: viewController, tintColor: tintColor, isActionable: isActionable) {
+        if let baseView = DepictionBaseView.view(
+            dictionary: view,
+            viewController: viewController,
+            tintColor: tintColor,
+            isActionable: isActionable
+        ) {
             self.containedView = baseView
             self.addSubview(baseView)
         }
@@ -46,7 +61,7 @@ class DepictionMinVersionForceView: DepictionBaseView {
 
         containedView?.frame = self.bounds
     }
-    
+
     override var isHighlighted: Bool {
         didSet {
             if isActionable {

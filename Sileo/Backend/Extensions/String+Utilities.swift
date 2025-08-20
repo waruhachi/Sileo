@@ -11,7 +11,11 @@ import Foundation
 extension String {
 
     func trimmingLeadingWhitespace() -> String {
-        self.replacingOccurrences(of: "^\\s+", with: "", options: .regularExpression)
+        self.replacingOccurrences(
+            of: "^\\s+",
+            with: "",
+            options: .regularExpression
+        )
     }
 
     func drop(prefix: String) -> Substring {

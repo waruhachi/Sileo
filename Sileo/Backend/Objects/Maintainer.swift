@@ -9,7 +9,7 @@
 import Foundation
 
 struct Maintainer: Decodable {
-    
+
     let name: String?
     let email: String?
     let string: String?
@@ -24,12 +24,15 @@ struct Maintainer: Decodable {
         self.string = string
         if let emailStartIndex = inputString.range(of: "<")?.lowerBound {
             let nameRange = inputString.startIndex..<emailStartIndex
-            let name = inputString[nameRange].trimmingCharacters(in: .whitespaces)
-            
+            let name = inputString[nameRange].trimmingCharacters(
+                in: .whitespaces
+            )
+
             if let emailEndIndex = inputString.range(of: ">")?.lowerBound {
-                let emailRange = inputString.index(after: emailStartIndex)..<emailEndIndex
+                let emailRange =
+                    inputString.index(after: emailStartIndex)..<emailEndIndex
                 let email = inputString[emailRange].lowercased()
-                
+
                 self.name = name.isEmpty ? nil : name
                 self.email = email.isEmpty ? nil : email
             } else {
@@ -47,5 +50,5 @@ struct Maintainer: Decodable {
         let stringValue = try? container.decode(String.self)
         self.init(string: stringValue)
     }
-    
+
 }

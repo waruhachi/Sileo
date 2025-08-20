@@ -12,19 +12,22 @@ extension URL {
     var isSecure: Bool {
         self.isSecure(prefix: "")
     }
-    
+
     func isSecure(prefix: String) -> Bool {
         if UserDefaults.standard.bool(forKey: "DeveloperMode") {
             return true
         }
         #if TARGET_SANDBOX || targetEnvironment(simulator)
-        return prefix.isEmpty || self.scheme?.lowercased().hasPrefix(prefix) == true
+            return prefix.isEmpty
+                || self.scheme?.lowercased().hasPrefix(prefix) == true
         #else
-        let expectedScheme = prefix.isEmpty ? "https" : String(format: "%@-https", prefix.lowercased())
-        return expectedScheme == self.scheme?.lowercased()
+            let expectedScheme =
+                prefix.isEmpty
+                ? "https" : String(format: "%@-https", prefix.lowercased())
+            return expectedScheme == self.scheme?.lowercased()
         #endif
     }
-    
+
     // The Swift class `URL` automatically encodes this back to a _ which results in big fucky wucky
     // with APT, this is the only way I could get it to work and I apologize
     var aptPath: String {
@@ -41,7 +44,7 @@ extension URL {
         }
         return nil
     }
-    
+
     init?(string: String?) {
         guard let string else { return nil }
         self.init(string: string)

@@ -17,7 +17,7 @@ import UIKit
 class SileoTheme: NSObject {
     var name: String
     @objc var preferredUserInterfaceStyle = SileoThemeInterfaceStyle.dark
-    
+
     var backgroundColor: UIColor?
     var secondaryBackgroundColor: UIColor?
     var labelColor: UIColor?
@@ -25,11 +25,21 @@ class SileoTheme: NSObject {
     var seperatorColor: UIColor?
     var headerColor: UIColor?
     var bannerColor: UIColor?
-    
+
     var codable: SileoCodableTheme {
-        SileoCodableTheme(name: name, preferredUserInterfaceStyle: preferredUserInterfaceStyle, backgroundColor: .init(backgroundColor), secondaryBackgroundColor: .init(secondaryBackgroundColor), labelColor: .init(labelColor), highlightColor: .init(highlightColor), seperatorColor: .init(seperatorColor), headerColor: .init(headerColor), bannerColor: .init(bannerColor))
+        SileoCodableTheme(
+            name: name,
+            preferredUserInterfaceStyle: preferredUserInterfaceStyle,
+            backgroundColor: .init(backgroundColor),
+            secondaryBackgroundColor: .init(secondaryBackgroundColor),
+            labelColor: .init(labelColor),
+            highlightColor: .init(highlightColor),
+            seperatorColor: .init(seperatorColor),
+            headerColor: .init(headerColor),
+            bannerColor: .init(bannerColor)
+        )
     }
-    
+
     init(name: String, interfaceStyle: SileoThemeInterfaceStyle) {
         self.name = name
         preferredUserInterfaceStyle = interfaceStyle
@@ -41,20 +51,25 @@ class SileoTheme: NSObject {
 // CodableColor interops with UIColor
 // and SileoCodableTheme interops with the non-Codable SileoTheme class
 
-
 struct CodableColor: Codable {
     let red: CGFloat
     let green: CGFloat
     let blue: CGFloat
     let alpha: CGFloat
-    
+
     var uiColor: UIColor {
-        .init(red: self.red, green: self.green, blue: self.blue, alpha: self.alpha)
+        .init(
+            red: self.red,
+            green: self.green,
+            blue: self.blue,
+            alpha: self.alpha
+        )
     }
-    
+
     init?(_ color: UIColor?) {
         guard let color = color,
-        let rgba = color.rgba else {
+            let rgba = color.rgba
+        else {
             return nil
         }
 
@@ -65,11 +80,10 @@ struct CodableColor: Codable {
     }
 }
 
-
 struct SileoCodableTheme: Codable {
     let name: String
     var preferredUserInterfaceStyle: SileoThemeInterfaceStyle = .dark
-    
+
     var backgroundColor: CodableColor?
     var secondaryBackgroundColor: CodableColor?
     var labelColor: CodableColor?
@@ -77,9 +91,12 @@ struct SileoCodableTheme: Codable {
     var seperatorColor: CodableColor?
     var headerColor: CodableColor?
     var bannerColor: CodableColor?
-    
+
     var sileoTheme: SileoTheme {
-        let theme = SileoTheme(name: name, interfaceStyle: preferredUserInterfaceStyle)
+        let theme = SileoTheme(
+            name: name,
+            interfaceStyle: preferredUserInterfaceStyle
+        )
         theme.backgroundColor = backgroundColor?.uiColor
         theme.secondaryBackgroundColor = secondaryBackgroundColor?.uiColor
         theme.labelColor = labelColor?.uiColor

@@ -10,11 +10,11 @@ import Foundation
 
 final class DownloadPackage: Hashable {
     public var package: Package
-    
+
     init(package: Package) {
         self.package = package
     }
-    
+
     func hash(into hasher: inout Hasher) {
         hasher.combine(package)
     }

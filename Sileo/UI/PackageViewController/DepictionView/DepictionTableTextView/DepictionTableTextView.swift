@@ -11,7 +11,12 @@ import Foundation
 class DepictionTableTextView: DepictionBaseView {
     private var titleLabel, textLabel: UILabel
 
-    required init?(dictionary: [String: Any], viewController: UIViewController, tintColor: UIColor, isActionable: Bool) {
+    required init?(
+        dictionary: [String: Any],
+        viewController: UIViewController,
+        tintColor: UIColor,
+        isActionable: Bool
+    ) {
         guard let title = dictionary["title"] as? String else {
             return nil
         }
@@ -21,32 +26,39 @@ class DepictionTableTextView: DepictionBaseView {
         titleLabel = UILabel(frame: .zero)
         textLabel = UILabel(frame: .zero)
 
-        super.init(dictionary: dictionary, viewController: viewController, tintColor: tintColor, isActionable: isActionable)
+        super.init(
+            dictionary: dictionary,
+            viewController: viewController,
+            tintColor: tintColor,
+            isActionable: isActionable
+        )
 
         titleLabel.text = title
         titleLabel.textAlignment = .left
         titleLabel.font = UIFont.systemFont(ofSize: 17)
-        titleLabel.textColor = UIColor(white: 175.0/255.0, alpha: 1)
+        titleLabel.textColor = UIColor(white: 175.0 / 255.0, alpha: 1)
         self.addSubview(titleLabel)
 
         textLabel.text = text
         textLabel.textAlignment = .right
         textLabel.font = UIFont.systemFont(ofSize: 17)
-        
+
         weak var weakSelf = self
-        NotificationCenter.default.addObserver(weakSelf as Any,
-                                               selector: #selector(updateSileoColors),
-                                               name: SileoThemeManager.sileoChangedThemeNotification,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            weakSelf as Any,
+            selector: #selector(updateSileoColors),
+            name: SileoThemeManager.sileoChangedThemeNotification,
+            object: nil
+        )
         textLabel.textColor = .sileoLabel
-        
+
         self.addSubview(textLabel)
     }
 
     required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     @objc func updateSileoColors() {
         textLabel.textColor = .sileoLabel
     }
@@ -62,7 +74,17 @@ class DepictionTableTextView: DepictionBaseView {
         containerFrame.origin.x = 16
         containerFrame.size.width -= 32
 
-        titleLabel.frame = CGRect(x: containerFrame.minX, y: 12, width: containerFrame.width/2.0, height: 20.0)
-        textLabel.frame = CGRect(x: containerFrame.minX + (containerFrame.width / 2.0), y: 12, width: containerFrame.width/2, height: 20)
+        titleLabel.frame = CGRect(
+            x: containerFrame.minX,
+            y: 12,
+            width: containerFrame.width / 2.0,
+            height: 20.0
+        )
+        textLabel.frame = CGRect(
+            x: containerFrame.minX + (containerFrame.width / 2.0),
+            y: 12,
+            width: containerFrame.width / 2,
+            height: 20
+        )
     }
 }

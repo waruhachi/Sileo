@@ -6,8 +6,8 @@
 //  Copyright © 2022 Sileo Team. All rights reserved.
 //
 
-import UIKit
 import Evander
+import UIKit
 
 class PaymentProviderTableViewCell: UITableViewCell {
     private var titleLabel: UILabel = UILabel()
@@ -15,7 +15,7 @@ class PaymentProviderTableViewCell: UITableViewCell {
     private var iconView: PackageIconView = PackageIconView()
     private var loadingView: UIActivityIndicatorView?
     public var isAuthenticated: Bool = false
-    
+
     override var textLabel: UILabel? {
         get {
             titleLabel
@@ -24,7 +24,7 @@ class PaymentProviderTableViewCell: UITableViewCell {
             titleLabel = newValue ?? UILabel()
         }
     }
-    
+
     override var detailTextLabel: UILabel? {
         get {
             subtitleLabel
@@ -33,7 +33,7 @@ class PaymentProviderTableViewCell: UITableViewCell {
             subtitleLabel = newValue ?? UILabel()
         }
     }
-    
+
     override var imageView: PackageIconView? {
         get {
             iconView
@@ -42,7 +42,7 @@ class PaymentProviderTableViewCell: UITableViewCell {
             iconView = newValue ?? PackageIconView()
         }
     }
-    
+
     var provider: PaymentProvider? {
         didSet {
             self.textLabel?.text = String(localizationKey: "Loading")
@@ -57,31 +57,50 @@ class PaymentProviderTableViewCell: UITableViewCell {
                     let name = info["name"] as? String
                     let description = info["description"] as? String
                     self.titleLabel.text = name
-                    self.subtitleLabel.text = self.isAuthenticated ? String(localizationKey: "Payment_Provider_Signed_In") : description
+                    self.subtitleLabel.text =
+                        self.isAuthenticated
+                        ? String(localizationKey: "Payment_Provider_Signed_In")
+                        : description
                     self.loadingView?.stopAnimating()
                     self.setImage(nil)
                     let url = info["icon"] as? String ?? ""
                     if !url.isEmpty {
-                        if let image = EvanderNetworking.image(url: url, size: self.imageView?.frame.size, { [weak self] image in
-                            guard let self = self,
-                                  url == self.provider?.info?["icon"] as? String else { return }
-                            DispatchQueue.main.async {
-                                self.setImage(image)
+                        if let image = EvanderNetworking.image(
+                            url: url,
+                            size: self.imageView?.frame.size,
+                            { [weak self] image in
+                                guard let self = self,
+                                    url == self.provider?.info?["icon"]
+                                        as? String
+                                else { return }
+                                DispatchQueue.main.async {
+                                    self.setImage(image)
+                                }
                             }
-                        }) {
+                        ) {
                             self.setImage(image)
                         } else {
                             self.setImage(nil)
                         }
                     }
                     if self.isAuthenticated {
-                        self.provider?.fetchUserInfo(fromCache: true) { _, userInfo in
+                        self.provider?.fetchUserInfo(fromCache: true) {
+                            _,
+                            userInfo in
                             DispatchQueue.main.async {
                                 if let userInfo = userInfo as [String: Any]? {
-                                    if let user = userInfo["user"] as? [String: String],
-                                        let username = user["name"] {
-                                        let string = String(localizationKey: "Payment_Provider_Signed_In_With_Name")
-                                        self.subtitleLabel.text = String(format: string, username)
+                                    if let user = userInfo["user"]
+                                        as? [String: String],
+                                        let username = user["name"]
+                                    {
+                                        let string = String(
+                                            localizationKey:
+                                                "Payment_Provider_Signed_In_With_Name"
+                                        )
+                                        self.subtitleLabel.text = String(
+                                            format: string,
+                                            username
+                                        )
                                     }
                                 }
                             }
@@ -91,14 +110,14 @@ class PaymentProviderTableViewCell: UITableViewCell {
             }
         }
     }
-    
+
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
-    
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
+
         self.preservesSuperviewLayoutMargins = true
         self.contentView.preservesSuperviewLayoutMargins = true
         self.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
@@ -111,32 +130,48 @@ class PaymentProviderTableViewCell: UITableViewCell {
         iconView.translatesAutoresizingMaskIntoConstraints = false
         iconView.isHidden = true
         iconView.widthAnchor.constraint(equalToConstant: 32).isActive = true
-        iconView.heightAnchor.constraint(equalTo: self.iconView.widthAnchor).isActive = true
+        iconView.heightAnchor.constraint(equalTo: self.iconView.widthAnchor)
+            .isActive = true
 
-        loadingView = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.gray)
+        loadingView = UIActivityIndicatorView(
+            style: UIActivityIndicatorView.Style.gray
+        )
         loadingView?.hidesWhenStopped = true
 
-        let textStackView: UIStackView = UIStackView(arrangedSubviews: [self.titleLabel, self.subtitleLabel])
+        let textStackView: UIStackView = UIStackView(arrangedSubviews: [
+            self.titleLabel, self.subtitleLabel,
+        ])
         textStackView.spacing = 2
         textStackView.axis = NSLayoutConstraint.Axis.vertical
 
-        let stackView: UIStackView = UIStackView(arrangedSubviews: [self.loadingView ?? UIActivityIndicatorView(), self.iconView, textStackView])
+        let stackView: UIStackView = UIStackView(arrangedSubviews: [
+            self.loadingView ?? UIActivityIndicatorView(), self.iconView,
+            textStackView,
+        ])
         stackView.spacing = 12
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.alignment = UIStackView.Alignment.center
         self.contentView.addSubview(stackView)
 
-        stackView.centerYAnchor.constraint(greaterThanOrEqualTo: self.contentView.centerYAnchor).isActive = true
-        stackView.leftAnchor.constraint(equalTo: self.contentView.layoutMarginsGuide.leftAnchor).isActive = true
-        stackView.rightAnchor.constraint(equalTo: self.contentView.layoutMarginsGuide.rightAnchor).isActive = true
-        
+        stackView.centerYAnchor.constraint(
+            greaterThanOrEqualTo: self.contentView.centerYAnchor
+        ).isActive = true
+        stackView.leftAnchor.constraint(
+            equalTo: self.contentView.layoutMarginsGuide.leftAnchor
+        ).isActive = true
+        stackView.rightAnchor.constraint(
+            equalTo: self.contentView.layoutMarginsGuide.rightAnchor
+        ).isActive = true
+
         weak var weakSelf = self
-        NotificationCenter.default.addObserver(weakSelf as Any,
-                                               selector: #selector(updateSileoColors),
-                                               name: SileoThemeManager.sileoChangedThemeNotification,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            weakSelf as Any,
+            selector: #selector(updateSileoColors),
+            name: SileoThemeManager.sileoChangedThemeNotification,
+            object: nil
+        )
     }
-    
+
     override func prepareForReuse() {
         super.prepareForReuse()
         isAuthenticated = false
@@ -146,7 +181,7 @@ class PaymentProviderTableViewCell: UITableViewCell {
         iconView.isHidden = image == nil
         iconView.image = image
     }
-    
+
     @objc func updateSileoColors() {
         titleLabel.textColor = .tintColor
         subtitleLabel.textColor = .tintColor

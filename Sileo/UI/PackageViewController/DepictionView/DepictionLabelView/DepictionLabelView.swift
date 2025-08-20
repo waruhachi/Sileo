@@ -11,15 +11,30 @@ import Foundation
 class DepictionLabelView: DepictionBaseView {
     private let label: UILabel
     private var useDefaultColor: Bool = false
-    private var margins: UIEdgeInsets = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+    private var margins: UIEdgeInsets = UIEdgeInsets(
+        top: 16,
+        left: 16,
+        bottom: 16,
+        right: 16
+    )
 
-    required init?(dictionary: [String: Any], viewController: UIViewController, tintColor: UIColor, isActionable: Bool) {
+    required init?(
+        dictionary: [String: Any],
+        viewController: UIViewController,
+        tintColor: UIColor,
+        isActionable: Bool
+    ) {
         guard let text = dictionary["text"] as? String else {
             return nil
         }
 
         label = UILabel(frame: .zero)
-        super.init(dictionary: dictionary, viewController: viewController, tintColor: tintColor, isActionable: isActionable)
+        super.init(
+            dictionary: dictionary,
+            viewController: viewController,
+            tintColor: tintColor,
+            isActionable: isActionable
+        )
 
         if let rawMargins = dictionary["margins"] as? String {
             margins = NSCoder.uiEdgeInsets(for: rawMargins)
@@ -52,17 +67,20 @@ class DepictionLabelView: DepictionBaseView {
         var textColor = UIColor.sileoLabel
         useDefaultColor = true
         if let rawTextColor = dictionary["textColor"] as? String,
-            let color = UIColor(css: rawTextColor) {
+            let color = UIColor(css: rawTextColor)
+        {
             textColor = color
             useDefaultColor = false
         }
-        
+
         if useDefaultColor {
             weak var weakSelf = self
-            NotificationCenter.default.addObserver(weakSelf as Any,
-                                                   selector: #selector(updateSileoColors),
-                                                   name: SileoThemeManager.sileoChangedThemeNotification,
-                                                   object: nil)
+            NotificationCenter.default.addObserver(
+                weakSelf as Any,
+                selector: #selector(updateSileoColors),
+                name: SileoThemeManager.sileoChangedThemeNotification,
+                object: nil
+            )
         }
 
         let weight = fontWeightParse(str: fontWeight)
@@ -115,7 +133,7 @@ class DepictionLabelView: DepictionBaseView {
     @objc func updateSileoColors() {
         self.layoutSubviews()
     }
-    
+
     override func depictionHeight(width: CGFloat) -> CGFloat {
         20 + margins.top + margins.bottom
     }
@@ -128,10 +146,20 @@ class DepictionLabelView: DepictionBaseView {
                     var tintHue: CGFloat = 0
                     var tintSat: CGFloat = 0
                     var tintBrightness: CGFloat = 0
-                    self.tintColor.getHue(&tintHue, saturation: &tintSat, brightness: &tintBrightness, alpha: nil)
-                    
+                    self.tintColor.getHue(
+                        &tintHue,
+                        saturation: &tintSat,
+                        brightness: &tintBrightness,
+                        alpha: nil
+                    )
+
                     tintBrightness *= 0.75
-                    label.textColor = UIColor(hue: tintHue, saturation: tintSat, brightness: tintBrightness, alpha: 1)
+                    label.textColor = UIColor(
+                        hue: tintHue,
+                        saturation: tintSat,
+                        brightness: tintBrightness,
+                        alpha: 1
+                    )
                 } else {
                     label.textColor = self.tintColor
                 }
@@ -139,13 +167,15 @@ class DepictionLabelView: DepictionBaseView {
                 label.textColor = .sileoLabel
             }
         }
-        
-        label.frame = CGRect(x: margins.left,
-                             y: margins.top,
-                             width: self.bounds.width - (margins.left + margins.right),
-                             height: self.bounds.height - (margins.top + margins.bottom))
+
+        label.frame = CGRect(
+            x: margins.left,
+            y: margins.top,
+            width: self.bounds.width - (margins.left + margins.right),
+            height: self.bounds.height - (margins.top + margins.bottom)
+        )
     }
-    
+
     override var isHighlighted: Bool {
         didSet {
             self.layoutSubviews()

@@ -16,62 +16,88 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
     private var popupLock = DispatchSemaphore(value: 1)
     private var shouldSelectIndex = -1
     private var fuckedUpSources = false
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         delegate = self
         TabBarController.singleton = self
-        
-        downloadsController = UINavigationController(rootViewController: DownloadManager.shared.viewController)
+
+        downloadsController = UINavigationController(
+            rootViewController: DownloadManager.shared.viewController
+        )
         downloadsController?.isNavigationBarHidden = true
         downloadsController?.popupItem.title = ""
         downloadsController?.popupItem.subtitle = ""
-        
+
         weak var weakSelf = self
-        NotificationCenter.default.addObserver(weakSelf as Any,
-                                               selector: #selector(updateSileoColors),
-                                               name: SileoThemeManager.sileoChangedThemeNotification,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            weakSelf as Any,
+            selector: #selector(updateSileoColors),
+            name: SileoThemeManager.sileoChangedThemeNotification,
+            object: nil
+        )
         updateSileoColors()
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
+
         self.updatePopup()
     }
-    
-    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+
+    func tabBarController(
+        _ tabBarController: UITabBarController,
+        shouldSelect viewController: UIViewController
+    ) -> Bool {
         shouldSelectIndex = tabBarController.selectedIndex
         return true
     }
 
-    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+    func tabBarController(
+        _ tabBarController: UITabBarController,
+        didSelect viewController: UIViewController
+    ) {
         if shouldSelectIndex == tabBarController.selectedIndex {
-            if let splitViewController = viewController as? UISplitViewController {
-                if let navController = splitViewController.viewControllers[0] as? UINavigationController {
+            if let splitViewController = viewController
+                as? UISplitViewController
+            {
+                if let navController = splitViewController.viewControllers[0]
+                    as? UINavigationController
+                {
                     navController.popToRootViewController(animated: true)
                 }
             }
         }
         if tabBarController.selectedIndex == 4 && shouldSelectIndex == 4 {
-            if let navController = tabBarController.viewControllers?[4] as? SileoNavigationController,
-               let packageList = navController.viewControllers[0] as? PackageListViewController {
+            if let navController = tabBarController.viewControllers?[4]
+                as? SileoNavigationController,
+                let packageList = navController.viewControllers[0]
+                    as? PackageListViewController
+            {
                 packageList.searchController?.searchBar.becomeFirstResponder()
             }
         }
         if tabBarController.selectedIndex == 3 && shouldSelectIndex == 3 {
-            if let navController = tabBarController.viewControllers?[3] as? SileoNavigationController,
-               let packageList = navController.viewControllers[0] as? PackageListViewController,
-               let collectionView = packageList.collectionView {
+            if let navController = tabBarController.viewControllers?[3]
+                as? SileoNavigationController,
+                let packageList = navController.viewControllers[0]
+                    as? PackageListViewController,
+                let collectionView = packageList.collectionView
+            {
                 let yVal = -1 * collectionView.adjustedContentInset.top
-                collectionView.setContentOffset(CGPoint(x: 0, y: yVal), animated: true)
+                collectionView.setContentOffset(
+                    CGPoint(x: 0, y: yVal),
+                    animated: true
+                )
             }
         }
-        if tabBarController.selectedIndex ==  2 && !fuckedUpSources {
-            if let sourcesSVC = tabBarController.viewControllers?[2] as? UISplitViewController,
-               let sourcesNaVC = sourcesSVC.viewControllers[0] as? SileoNavigationController {
+        if tabBarController.selectedIndex == 2 && !fuckedUpSources {
+            if let sourcesSVC = tabBarController.viewControllers?[2]
+                as? UISplitViewController,
+                let sourcesNaVC = sourcesSVC.viewControllers[0]
+                    as? SileoNavigationController
+            {
                 if sourcesNaVC.presentedViewController == nil {
                     sourcesNaVC.popToRootViewController(animated: false)
                 }
@@ -82,44 +108,44 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
         if viewController as? SourcesSplitViewController != nil { return }
         fatalError("View Controller mismatch")
     }
-    
+
     func presentPopup() {
         presentPopup(completion: nil)
     }
-    
+
     func presentPopup(completion: (() -> Void)?) {
         guard let downloadsController = downloadsController,
-              !popupIsPresented
+            !popupIsPresented
         else {
             if let completion = completion {
                 completion()
             }
             return
         }
-        
+
         popupLock.wait()
         defer {
             popupLock.signal()
         }
-        
+
         popupIsPresented = true
         self.popupBar.barStyle = .prominent
         self.popupBar.progressViewStyle = .bottom
         self.popupInteractionStyle = .drag
-        
+
         self.updateSileoColors()
-        
+
         self.popupBar.progressViewStyle = .bottom
         self.popupInteractionStyle = .drag
         self.presentPopupBar(with: downloadsController, animated: true)
-        
+
         self.updateSileoColors()
     }
-    
+
     func dismissPopup() {
         dismissPopup(completion: nil)
     }
-    
+
     func dismissPopup(completion: (() -> Void)?) {
         guard popupIsPresented else {
             if let completion = completion {
@@ -127,7 +153,7 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
             }
             return
         }
-        
+
         DispatchQueue.global(qos: .userInitiated).async {
             self.popupLock.wait()
 
@@ -142,11 +168,11 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
             }
         }
     }
-    
+
     func presentPopupController() {
         self.presentPopupController(completion: nil)
     }
-    
+
     func presentPopupController(completion: (() -> Void)?) {
         guard popupIsPresented else {
             if let completion = completion {
@@ -154,42 +180,49 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
             }
             return
         }
-        
+
         popupLock.wait()
         defer {
             popupLock.signal()
         }
-        
+
         self.openPopup(animated: true, completion: completion)
     }
-    
+
     func dismissPopupController() {
         self.dismissPopupController(completion: nil)
     }
-    
+
     func dismissPopupController(completion: (() -> Void)?) {
         guard popupIsPresented else {
             completion?()
             return
         }
-        
+
         popupLock.wait()
         defer {
             popupLock.signal()
         }
-        
+
         self.closePopup(animated: true, completion: completion)
     }
-    
+
     func updatePopup() {
         updatePopup(completion: nil)
     }
-    
+
     func updatePopup(completion: (() -> Void)? = nil, bypass: Bool = false) {
         func hideRegardless() {
-            if UIDevice.current.userInterfaceIdiom == .pad && self.view.frame.width >= 768 {
-                downloadsController?.popupItem.title = String(localizationKey: "Queued_Package_Status")
-                downloadsController?.popupItem.subtitle = String(format: String(localizationKey: "Package_Queue_Count"), 0)
+            if UIDevice.current.userInterfaceIdiom == .pad
+                && self.view.frame.width >= 768
+            {
+                downloadsController?.popupItem.title = String(
+                    localizationKey: "Queued_Package_Status"
+                )
+                downloadsController?.popupItem.subtitle = String(
+                    format: String(localizationKey: "Package_Queue_Count"),
+                    0
+                )
                 self.presentPopup(completion: completion)
             } else {
                 self.dismissPopup(completion: completion)
@@ -201,39 +234,66 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
         }
         let manager = DownloadManager.shared
         if manager.lockedForInstallation {
-            downloadsController?.popupItem.title = String(localizationKey: "Installing_Package_Status")
-            downloadsController?.popupItem.subtitle = String(format: String(localizationKey: "Package_Queue_Count"), manager.readyPackages())
-            downloadsController?.popupItem.progress = Float(manager.totalProgress)
+            downloadsController?.popupItem.title = String(
+                localizationKey: "Installing_Package_Status"
+            )
+            downloadsController?.popupItem.subtitle = String(
+                format: String(localizationKey: "Package_Queue_Count"),
+                manager.readyPackages()
+            )
+            downloadsController?.popupItem.progress = Float(
+                manager.totalProgress
+            )
             self.presentPopup(completion: completion)
         } else if manager.downloadingPackages() > 0 {
-            downloadsController?.popupItem.title = String(localizationKey: "Downloading_Package_Status")
-            downloadsController?.popupItem.subtitle = String(format: String(localizationKey: "Package_Queue_Count"), manager.downloadingPackages())
+            downloadsController?.popupItem.title = String(
+                localizationKey: "Downloading_Package_Status"
+            )
+            downloadsController?.popupItem.subtitle = String(
+                format: String(localizationKey: "Package_Queue_Count"),
+                manager.downloadingPackages()
+            )
             downloadsController?.popupItem.progress = 0
             self.presentPopup(completion: completion)
         } else if manager.operationCount() > 0 {
-            downloadsController?.popupItem.title = String(localizationKey: "Queued_Package_Status")
-            downloadsController?.popupItem.subtitle = String(format: String(localizationKey: "Package_Queue_Count"), manager.operationCount())
+            downloadsController?.popupItem.title = String(
+                localizationKey: "Queued_Package_Status"
+            )
+            downloadsController?.popupItem.subtitle = String(
+                format: String(localizationKey: "Package_Queue_Count"),
+                manager.operationCount()
+            )
             downloadsController?.popupItem.progress = 0
             self.presentPopup(completion: completion)
         } else if manager.readyPackages() > 0 {
-            downloadsController?.popupItem.title = String(localizationKey: "Ready_Status")
-            downloadsController?.popupItem.subtitle = String(format: String(localizationKey: "Package_Queue_Count"), manager.readyPackages())
+            downloadsController?.popupItem.title = String(
+                localizationKey: "Ready_Status"
+            )
+            downloadsController?.popupItem.subtitle = String(
+                format: String(localizationKey: "Package_Queue_Count"),
+                manager.readyPackages()
+            )
             downloadsController?.popupItem.progress = 0
             self.presentPopup(completion: completion)
         } else if manager.uninstallingPackages() > 0 {
-            downloadsController?.popupItem.title = String(localizationKey: "Removal_Queued_Package_Status")
-            downloadsController?.popupItem.subtitle = String(format: String(localizationKey: "Package_Queue_Count"), manager.uninstallingPackages())
+            downloadsController?.popupItem.title = String(
+                localizationKey: "Removal_Queued_Package_Status"
+            )
+            downloadsController?.popupItem.subtitle = String(
+                format: String(localizationKey: "Package_Queue_Count"),
+                manager.uninstallingPackages()
+            )
             downloadsController?.popupItem.progress = 0
             self.presentPopup(completion: completion)
         } else {
             hideRegardless()
         }
     }
-    
+
     override var bottomDockingViewForPopupBar: UIView? {
         self.tabBar
     }
-    
+
     override var defaultFrameForBottomDockingView: CGRect {
         var tabBarFrame = self.tabBar.frame
         tabBarFrame.origin.y = self.view.bounds.height - tabBarFrame.height
@@ -246,36 +306,45 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
         }
         return tabBarFrame
     }
-    
+
     override var insetsForBottomDockingView: UIEdgeInsets {
         if UIDevice.current.userInterfaceIdiom == .pad {
             if self.view.bounds.width < 768 {
                 return .zero
             }
-            return UIEdgeInsets(top: self.tabBar.frame.height, left: self.view.bounds.width - 320, bottom: 0, right: 0)
+            return UIEdgeInsets(
+                top: self.tabBar.frame.height,
+                left: self.view.bounds.width - 320,
+                bottom: 0,
+                right: 0
+            )
         }
         return .zero
     }
-    
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+
+    override func traitCollectionDidChange(
+        _ previousTraitCollection: UITraitCollection?
+    ) {
         updateSileoColors()
     }
-    
+
     @objc func updateSileoColors() {
         self.popupBar.barStyle = .default
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
+
         self.tabBar.itemPositioning = .centered
         if UIDevice.current.userInterfaceIdiom == .pad {
-            if self.view.frame.width >= 768 || UIDevice.current.orientation.isPortrait {
+            if self.view.frame.width >= 768
+                || UIDevice.current.orientation.isPortrait
+            {
                 self.updatePopup()
             }
         }
     }
-    
+
     public func displayError(_ string: String) {
         if !Thread.isMainThread {
             DispatchQueue.main.async {
@@ -283,8 +352,14 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
             }
             return
         }
-        let alertController = UIAlertController(title: String(localizationKey: "Unknown", type: .error), message: string, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: String(localizationKey: "OK"), style: .default))
+        let alertController = UIAlertController(
+            title: String(localizationKey: "Unknown", type: .error),
+            message: string,
+            preferredStyle: .alert
+        )
+        alertController.addAction(
+            UIAlertAction(title: String(localizationKey: "OK"), style: .default)
+        )
         self.present(alertController, animated: true, completion: nil)
     }
 }

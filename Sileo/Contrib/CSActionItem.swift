@@ -23,20 +23,25 @@ class CSActionItem {
     let image: UIImage?
     let style: UIPreviewAction.Style
     let handler: () -> Void
-    
-    init(title: String, image: UIImage? = nil, style: UIPreviewAction.Style = .default, handler: @escaping () -> Void) {
+
+    init(
+        title: String,
+        image: UIImage? = nil,
+        style: UIPreviewAction.Style = .default,
+        handler: @escaping () -> Void
+    ) {
         self.title = title
         self.image = image
         self.style = style
         self.handler = handler
     }
-    
+
     func previewAction() -> UIPreviewAction {
         UIPreviewAction(title: title, style: style) { _, _ in
             self.handler()
         }
     }
-    
+
     @available(iOS 13.0, *)
     var menuStyle: UIMenuElement.Attributes {
         switch style {
@@ -48,7 +53,7 @@ class CSActionItem {
             return []
         }
     }
-    
+
     @available(iOS 13.0, *)
     func action() -> UIAction {
         UIAction(title: title, image: image, attributes: self.menuStyle) { _ in

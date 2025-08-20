@@ -22,7 +22,8 @@ int order(char ch) {
 int validate(char *string, int *length) {
     for (int i = 0; i < *length; i++) {
         char character = string[i];
-        if (!(isdigit(character) || isalpha(character) || strchr(".-+~:", character))) {
+        if (!(isdigit(character) || isalpha(character) ||
+              strchr(".-+~:", character))) {
             return 1;
         }
     }
@@ -45,13 +46,13 @@ int verrevcmp(const char *val, const char *ref) {
             val++;
             ref++;
         }
-        
+
         // Skip past 0
         while (*val == 48 && *val)
             val++;
         while (*ref == 48 && *ref)
             ref++;
-        
+
         // If both a digit, compare which is larger
         while (isdigit(*val) && isdigit(*ref)) {
             if (!firstDiff)
@@ -59,7 +60,7 @@ int verrevcmp(const char *val, const char *ref) {
             val++;
             ref++;
         }
-        
+
         // Return whichever value is larger
         if (isdigit(*val))
             return 1;
@@ -68,11 +69,12 @@ int verrevcmp(const char *val, const char *ref) {
         if (firstDiff)
             return firstDiff;
     }
-    
+
     return 0;
 }
 
-void parseVersion(char *version, int *length, char **error, struct DpkgVersion *dpkgVersion) {
+void parseVersion(char *version, int *length, char **error,
+                  struct DpkgVersion *dpkgVersion) {
     int found = 0;
     int searchIdx = 0;
     for (; searchIdx < *length; searchIdx++) {
@@ -81,7 +83,7 @@ void parseVersion(char *version, int *length, char **error, struct DpkgVersion *
             break;
         }
     }
-    
+
     long epochNum = 0;
     if (found) {
         if (searchIdx == 0) {
@@ -90,15 +92,15 @@ void parseVersion(char *version, int *length, char **error, struct DpkgVersion *
         }
         char epochString[searchIdx];
         memcpy(epochString, version, searchIdx);
-        
+
         *length -= (searchIdx + 1);
         version += (searchIdx + 1);
-        
+
         if (!*length) {
             *error = "nothing after colon in version number";
             return;
         }
-        
+
         errno = 0;
         char *ret;
         epochNum = strtol(epochString, &ret, 10);
@@ -106,7 +108,7 @@ void parseVersion(char *version, int *length, char **error, struct DpkgVersion *
             *error = "epoch is not a number";
             return;
         }
-        
+
         if (epochNum > INT_MAX || errno == ERANGE) {
             *error = "epoch version is too big";
             return;
@@ -116,7 +118,7 @@ void parseVersion(char *version, int *length, char **error, struct DpkgVersion *
             return;
         }
     }
-    
+
     searchIdx = *length - 1;
     found = 0;
 
@@ -129,13 +131,13 @@ void parseVersion(char *version, int *length, char **error, struct DpkgVersion *
     if (found) {
         version[searchIdx] = 0;
     }
-    
+
     char *versionStr = version;
     int versionStrCount = *length;
-    
+
     char *revisionStr = "";
     int revisionStrCount = 1;
-    
+
     if (found) {
         versionStrCount = searchIdx + 1;
         versionStr = malloc(versionStrCount);
@@ -146,7 +148,8 @@ void parseVersion(char *version, int *length, char **error, struct DpkgVersion *
         memcpy(revisionStr, version + searchIdx + 1, revisionStrCount);
     }
 
-    if (validate(versionStr, &versionStrCount) || validate(revisionStr, &revisionStrCount)) {
+    if (validate(versionStr, &versionStrCount) ||
+        validate(revisionStr, &revisionStrCount)) {
         *error = "invalid character in version number";
         if (found) {
             free(versionStr);
@@ -154,8 +157,9 @@ void parseVersion(char *version, int *length, char **error, struct DpkgVersion *
         }
         return;
     }
-    
-    if ((versionStrCount && versionStr[versionStrCount - 1]) || (revisionStrCount && revisionStr[revisionStrCount - 1])) {
+
+    if ((versionStrCount && versionStr[versionStrCount - 1]) ||
+        (revisionStrCount && revisionStr[revisionStrCount - 1])) {
         *error = "needs null termination";
         if (found) {
             free(versionStr);
@@ -170,22 +174,23 @@ void parseVersion(char *version, int *length, char **error, struct DpkgVersion *
     dpkgVersion->revision = revisionStr;
 }
 
-int compareVersion(const char *version1, int version1Count, const char *version2, int version2Count) {
+int compareVersion(const char *version1, int version1Count,
+                   const char *version2, int version2Count) {
     if (strcmp(version1, version2) == 0)
         return 0;
 
     char *_version1 = (char *)version1;
     char *_version2 = (char *)version2;
 
-    struct DpkgVersion package1 = { 0 };
-    struct DpkgVersion package2 = { 0 };
+    struct DpkgVersion package1 = {0};
+    struct DpkgVersion package2 = {0};
     package1.requiresFree = 0;
     package2.requiresFree = 0;
-    
+
     char *error = NULL;
-    
+
     int cmp = 0;
-    
+
     parseVersion(_version1, &version1Count, &error, &package1);
     if (error)
         goto cleanup;
@@ -196,19 +201,19 @@ int compareVersion(const char *version1, int version1Count, const char *version2
         cmp = 1;
         goto cleanup;
     }
-        
+
     if (package1.epoch < package2.epoch) {
         cmp = -1;
         goto cleanup;
     }
-    
+
     int retVal = verrevcmp(package1.version, package2.version);
     if (retVal) {
         cmp = retVal;
         goto cleanup;
     }
     cmp = verrevcmp(package1.revision, package2.revision);
-    
+
 cleanup:
     if (package1.requiresFree) {
         free(package1.version);

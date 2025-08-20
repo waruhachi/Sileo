@@ -11,6 +11,9 @@
 #ifndef ControlFileParserFast_h
 #define ControlFileParserFast_h
 
-void parseControlFile(const uint8_t *_Nonnull, size_t, bool, void (^__nonnull callback)(const char *_Nonnull key, const char *_Nonnull value), void (^__nonnull tagCallback)(int));
+void parseControlFile(const uint8_t *_Nonnull, size_t, bool,
+                      void (^__nonnull callback)(const char *_Nonnull key,
+                                                 const char *_Nonnull value),
+                      void (^__nonnull tagCallback)(int));
 
 #endif /* ControlFileParserFast_h */

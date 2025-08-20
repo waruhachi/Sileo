@@ -6,8 +6,8 @@
 //  Copyright © 2022 Sileo Team. All rights reserved.
 //
 
-import Foundation
 import Evander
+import Foundation
 
 class DepictionTabView: DepictionBaseView, DepictionTabControlContainer {
     var tabViews: [DepictionTabControl] = []
@@ -17,7 +17,12 @@ class DepictionTabView: DepictionBaseView, DepictionTabControlContainer {
     var tabViewSeparator: UIView?
     var tabViewHighlight: UIView?
 
-    required init?(dictionary: [String: Any], viewController: UIViewController, tintColor: UIColor, isActionable: Bool) {
+    required init?(
+        dictionary: [String: Any],
+        viewController: UIViewController,
+        tintColor: UIColor,
+        isActionable: Bool
+    ) {
         guard let tabs = dictionary["tabs"] as? [[String: Any]] else {
             return nil
         }
@@ -31,7 +36,12 @@ class DepictionTabView: DepictionBaseView, DepictionTabControlContainer {
             }
         }
 
-        super.init(dictionary: dictionary, viewController: viewController, tintColor: tintColor, isActionable: isActionable)
+        super.init(
+            dictionary: dictionary,
+            viewController: viewController,
+            tintColor: tintColor,
+            isActionable: isActionable
+        )
         tabView = UIView(frame: .zero)
         addSubview(tabView!)
 
@@ -42,7 +52,12 @@ class DepictionTabView: DepictionBaseView, DepictionTabControlContainer {
 
             let tabControl = DepictionTabControl(text: tabName)
 
-            if let view = DepictionBaseView.view(dictionary: tab, viewController: viewController, tintColor: tintColor, isActionable: isActionable) {
+            if let view = DepictionBaseView.view(
+                dictionary: tab,
+                viewController: viewController,
+                tintColor: tintColor,
+                isActionable: isActionable
+            ) {
                 tabViews.append(tabControl)
                 tabView?.addSubview(tabControl)
                 tabContentViews.append(view)
@@ -51,13 +66,15 @@ class DepictionTabView: DepictionBaseView, DepictionTabControlContainer {
 
         tabViewSeparator = UIView(frame: .zero)
         tabViewSeparator?.backgroundColor = .sileoSeparatorColor
-        
+
         weak var weakSelf = self
-        NotificationCenter.default.addObserver(weakSelf as Any,
-                                               selector: #selector(updateSileoColors),
-                                               name: SileoThemeManager.sileoChangedThemeNotification,
-                                               object: nil)
-        
+        NotificationCenter.default.addObserver(
+            weakSelf as Any,
+            selector: #selector(updateSileoColors),
+            name: SileoThemeManager.sileoChangedThemeNotification,
+            object: nil
+        )
+
         tabView?.addSubview(tabViewSeparator!)
 
         tabViewHighlight = UIView(frame: .zero)
@@ -73,7 +90,10 @@ class DepictionTabView: DepictionBaseView, DepictionTabControlContainer {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        tabView?.frame = CGRect(origin: .zero, size: CGSize(width: self.bounds.width, height: 40))
+        tabView?.frame = CGRect(
+            origin: .zero,
+            size: CGSize(width: self.bounds.width, height: 40)
+        )
         tabView?.accessibilityTraits = .tabBar
 
         let activeTab = tabViews[self.activeTab]
@@ -86,7 +106,12 @@ class DepictionTabView: DepictionBaseView, DepictionTabControlContainer {
 
         var x = CGFloat(0)
         for tabControl in tabViews {
-            tabControl.frame = CGRect(x: x, y: 0, width: self.bounds.width/tabCount, height: 40)
+            tabControl.frame = CGRect(
+                x: x,
+                y: 0,
+                width: self.bounds.width / tabCount,
+                height: 40
+            )
             x += tabControl.frame.width
 
             if tabControl != activeTab {
@@ -94,20 +119,36 @@ class DepictionTabView: DepictionBaseView, DepictionTabControlContainer {
             }
         }
 
-        for tabContent in tabContentViews where tabContent != activeTabContent && self.subviews.contains(tabContent) {
+        for tabContent in tabContentViews
+        where tabContent != activeTabContent
+            && self.subviews.contains(tabContent)
+        {
             tabContent.removeFromSuperview()
         }
 
         let highlightWidth = activeTab.textWidth() + 6
         tabViewHighlight?.backgroundColor = self.tintColor
 
-        tabViewSeparator?.frame = CGRect(x: 0, y: 39, width: self.bounds.width, height: 1)
-        tabViewHighlight?.frame = CGRect(x: activeTab.frame.minX + (activeTab.frame.width - highlightWidth)/2.0,
-                                         y: 38.0,
-                                         width: highlightWidth,
-                                         height: 2)
+        tabViewSeparator?.frame = CGRect(
+            x: 0,
+            y: 39,
+            width: self.bounds.width,
+            height: 1
+        )
+        tabViewHighlight?.frame = CGRect(
+            x: activeTab.frame.minX + (activeTab.frame.width - highlightWidth)
+                / 2.0,
+            y: 38.0,
+            width: highlightWidth,
+            height: 2
+        )
         UIView.setAnimationsEnabled(false)
-        activeTabContent.frame = CGRect(x: 0, y: 40, width: self.bounds.width, height: activeTabContent.depictionHeight(width: self.bounds.width))
+        activeTabContent.frame = CGRect(
+            x: 0,
+            y: 40,
+            width: self.bounds.width,
+            height: activeTabContent.depictionHeight(width: self.bounds.width)
+        )
         activeTabContent.layoutSubviews()
         UIView.setAnimationsEnabled(true)
 
@@ -137,11 +178,11 @@ class DepictionTabView: DepictionBaseView, DepictionTabControlContainer {
         height += depictionView.depictionHeight(width: width)
         return height
     }
-    
+
     @objc func updateSileoColors() {
         tabViewSeparator?.backgroundColor = .sileoSeparatorColor
     }
-    
+
     override var isHighlighted: Bool {
         didSet {
             if isActionable {

@@ -12,18 +12,30 @@ import Foundation
 class DepictionSeparatorView: DepictionBaseView {
     private var separatorView: UIView?
 
-    required init?(dictionary: [String: Any], viewController: UIViewController, tintColor: UIColor, isActionable: Bool) {
+    required init?(
+        dictionary: [String: Any],
+        viewController: UIViewController,
+        tintColor: UIColor,
+        isActionable: Bool
+    ) {
         separatorView = UIView(frame: .zero)
 
-        super.init(dictionary: dictionary, viewController: viewController, tintColor: tintColor, isActionable: isActionable)
+        super.init(
+            dictionary: dictionary,
+            viewController: viewController,
+            tintColor: tintColor,
+            isActionable: isActionable
+        )
         separatorView?.backgroundColor = .sileoSeparatorColor
         addSubview(separatorView!)
-        
+
         weak var weakSelf = self
-        NotificationCenter.default.addObserver(weakSelf as Any,
-                                               selector: #selector(updateSileoColors),
-                                               name: SileoThemeManager.sileoChangedThemeNotification,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            weakSelf as Any,
+            selector: #selector(updateSileoColors),
+            name: SileoThemeManager.sileoChangedThemeNotification,
+            object: nil
+        )
     }
 
     required public init?(coder aDecoder: NSCoder) {
@@ -33,7 +45,7 @@ class DepictionSeparatorView: DepictionBaseView {
     @objc func updateSileoColors() {
         separatorView?.backgroundColor = .sileoSeparatorColor
     }
-    
+
     override func depictionHeight(width: CGFloat) -> CGFloat {
         3
     }
@@ -41,6 +53,11 @@ class DepictionSeparatorView: DepictionBaseView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        separatorView?.frame = CGRect(x: 16, y: 1, width: self.bounds.width - 32, height: 1)
+        separatorView?.frame = CGRect(
+            x: 16,
+            y: 1,
+            width: self.bounds.width - 32,
+            height: 1
+        )
     }
 }
