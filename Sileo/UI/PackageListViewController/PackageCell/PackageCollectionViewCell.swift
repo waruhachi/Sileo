@@ -38,12 +38,16 @@ class PackageCollectionViewCell: SwipeCollectionViewCell {
                 let repoDisplay =
                     targetPackage.sourceRepo?.displayName ?? targetPackage
                     .source?.host ?? ""
+                let effectiveRepoDisplay =
+                    repoDisplay.isEmpty ? "Local" : repoDisplay
                 let versionAndRepo =
-                    repoDisplay.isEmpty
-                    ? "\(targetPackage.version)"
-                    : "\(targetPackage.version) • \(repoDisplay)"
-                authorLabel?.text =
+                    "\(targetPackage.version) • \(effectiveRepoDisplay)"
+                let fullText =
                     "\(targetPackage.author?.name ?? "Unknown") • \(versionAndRepo)"
+                self.setAuthorLabelText(
+                    fullText,
+                    repoDisplay: effectiveRepoDisplay
+                )
                 descriptionLabel?.text = targetPackage.packageDescription
 
                 let url = targetPackage.icon
@@ -77,10 +81,16 @@ class PackageCollectionViewCell: SwipeCollectionViewCell {
                 let repoDisplay =
                     provisionalTarget.repository.uri.host
                     ?? provisionalTarget.repository.slug
+                let effectiveRepoDisplay =
+                    repoDisplay.isEmpty ? "Local" : repoDisplay
                 let versionAndRepo =
-                    "\(provisionalTarget.version) • \(repoDisplay)"
-                authorLabel?.text =
+                    "\(provisionalTarget.version) • \(effectiveRepoDisplay)"
+                let fullText =
                     "\(provisionalTarget.author?.name ?? "") • \(versionAndRepo)"
+                self.setAuthorLabelText(
+                    fullText,
+                    repoDisplay: effectiveRepoDisplay
+                )
                 descriptionLabel?.text = provisionalTarget.description
 
                 let url = provisionalTarget.icon
@@ -147,6 +157,26 @@ class PackageCollectionViewCell: SwipeCollectionViewCell {
     @objc func updateSileoColors() {
         if !(targetPackage?.commercial ?? false) {
             titleLabel?.textColor = .sileoLabel
+        }
+        if let package = targetPackage {
+            let repoDisplay =
+                package.sourceRepo?.displayName ?? package.source?.host ?? ""
+            let effectiveRepoDisplay =
+                repoDisplay.isEmpty ? "Local" : repoDisplay
+            let versionAndRepo = "\(package.version) • \(effectiveRepoDisplay)"
+            let fullText =
+                "\(package.author?.name ?? "Unknown") • \(versionAndRepo)"
+            self.setAuthorLabelText(fullText, repoDisplay: effectiveRepoDisplay)
+        } else if let provisional = provisionalTarget {
+            let repoDisplay =
+                provisional.repository.uri.host ?? provisional.repository.slug
+            let effectiveRepoDisplay =
+                repoDisplay.isEmpty ? "Local" : repoDisplay
+            let versionAndRepo =
+                "\(provisional.version) • \(effectiveRepoDisplay)"
+            let fullText =
+                "\(provisional.author?.name ?? "") • \(versionAndRepo)"
+            self.setAuthorLabelText(fullText, repoDisplay: effectiveRepoDisplay)
         }
     }
 
@@ -617,5 +647,32 @@ extension PackageCollectionViewCell: SwipeCollectionViewCellDelegate {
             let generator = UINotificationFeedbackGenerator()
             generator.notificationOccurred(.success)
         }
+    }
+}
+
+extension PackageCollectionViewCell {
+    fileprivate func setAuthorLabelText(_ text: String, repoDisplay: String) {
+        self.authorLabel?.text = text
+        guard !repoDisplay.isEmpty else {
+            self.authorLabel?.attributedText = nil
+            return
+        }
+        let baseColor = self.authorLabel?.textColor ?? .sileoLabel
+        let attributed = NSMutableAttributedString(
+            string: text,
+            attributes: [
+                .foregroundColor: baseColor
+            ]
+        )
+        let nsText = text as NSString
+        let range = nsText.range(of: repoDisplay, options: .backwards)
+        if range.location != NSNotFound {
+            attributed.addAttribute(
+                .foregroundColor,
+                value: UIColor.tintColor,
+                range: range
+            )
+        }
+        self.authorLabel?.attributedText = attributed
     }
 }
