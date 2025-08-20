@@ -47,7 +47,14 @@ jobs:
         run: |
           make clean package NIGHTLY=1 DEBUG=0 ALL_BOOTSTRAPS=1 SILEO_PLATFORM=iphoneos-arm64
       
-      - name: Upload Sileo Nightly
+      - name: Upload Sileo Nightly (iphoneos-arm)
         uses: actions/upload-artifact@v4
         with:
-          path: ./packages/*.deb
+          name: org.coolstar.sileonightly_iphoneos-arm
+          path: ./packages/*_iphoneos-arm.deb
+
+      - name: Upload Sileo Nightly (iphoneos-arm64)
+        uses: actions/upload-artifact@v4
+        with:
+          name: org.coolstar.sileonightly_iphoneos-arm64
+          path: ./packages/*_iphoneos-arm64.deb

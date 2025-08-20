@@ -46,7 +46,14 @@ jobs:
         run: |
           make clean package DEBUG=0 ALL_BOOTSTRAPS=1 SILEO_PLATFORM=iphoneos-arm64
 
-      - name: Upload Sileo
+      - name: Upload Sileo (iphoneos-arm)
         uses: actions/upload-artifact@v4
         with:
-          path: ./packages/*.deb
+            name: org.coolstar.sileo_iphoneos-arm
+            path: ./packages/*_iphoneos-arm.deb
+  
+      - name: Upload Sileo (iphoneos-arm64)
+        uses: actions/upload-artifact@v4
+        with:
+            name: org.coolstar.sileo_iphoneos-arm64
+            path: ./packages/*_iphoneos-arm64.deb
