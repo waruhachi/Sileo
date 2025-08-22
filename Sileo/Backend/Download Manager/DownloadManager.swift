@@ -391,6 +391,105 @@ final class DownloadManager {
         downloads[package]
     }
 
+    public func downloadFile(
+        for package: Package,
+        progress: ((DownloadProgress) -> Void)? = nil,
+        waiting: ((String) -> Void)? = nil,
+        onStart: ((EvanderDownloader?) -> Void)? = nil,
+        completion: @escaping (Result<URL, Swift.Error>) -> Void
+    ) {
+        let download = Download(package: package)
+
+        var filename = package.filename ?? ""
+
+        var packageRepo: Repo?
+        for repo in RepoManager.shared.repoList where repo.rawEntry == package.sourceFile {
+            packageRepo = repo
+        }
+
+        if package.package.contains("/") {
+            filename = URL(fileURLWithPath: package.package).absoluteString
+        } else if !filename.hasPrefix("https://") && !filename.hasPrefix("http://") {
+            filename =
+                URL(string: packageRepo?.rawURL ?? "")?.appendingPathComponent(filename)
+                .absoluteString ?? ""
+        }
+
+        self.overrideDownloadURL(package: package, repo: packageRepo) { errorMessage, url in
+            if let errorMessage = errorMessage, url == nil {
+                return completion(
+                    .failure(
+                        NSError(
+                            domain: "DownloadManager", code: -1,
+                            userInfo: [NSLocalizedDescriptionKey: errorMessage])))
+            }
+            let downloadURL = url ?? URL(string: filename)
+            download.task = RepoManager.shared.queue(
+                from: downloadURL,
+                progress: { p in
+                    download.message = nil
+                    download.progress = CGFloat(p.fractionCompleted)
+                    download.totalBytesWritten = p.total
+                    download.totalBytesExpectedToWrite = p.expected
+                    progress?(p)
+                },
+                success: { fileURL in
+                    let attributes = try? FileManager.default.attributesOfItem(atPath: fileURL.path)
+                    let fileSize = attributes?[FileAttributeKey.size] as? Int
+                    let fileSizeStr = String(format: "%ld", fileSize ?? 0)
+                    if !package.package.contains("/") && (fileSizeStr != package.size) {
+                        return completion(
+                            .failure(
+                                NSError(
+                                    domain: "DownloadManager", code: -2,
+                                    userInfo: [
+                                        NSLocalizedDescriptionKey: String(
+                                            format: String(
+                                                localizationKey: "Download_Size_Mismatch",
+                                                type: .error), package.size ?? "nil", fileSizeStr)
+                                    ])))
+                    }
+                    do {
+                        _ = try self.verify(download: download, fileURL: fileURL)
+                    } catch {
+                        return completion(.failure(error))
+                    }
+
+                    let aptPathURL: URL? = {
+                        let packageID = self.aptEncoded(string: package.packageID, isArch: false)
+                        let version = self.aptEncoded(string: package.version, isArch: false)
+                        let architecture = self.aptEncoded(
+                            string: package.architecture ?? "", isArch: true)
+                        let destFileName =
+                            "\(CommandPath.prefix)/var/cache/apt/archives/\(packageID)_\(version)_\(architecture).deb"
+                        let destURL = URL(fileURLWithPath: destFileName)
+                        return FileManager.default.fileExists(atPath: destFileName) ? destURL : nil
+                    }()
+                    completion(.success(aptPathURL ?? fileURL))
+                },
+                failure: { statusCode, error in
+                    let description =
+                        error?.localizedDescription
+                        ?? String(
+                            format: String(
+                                localizationKey: "Download_Failing_Status_Code", type: .error),
+                            statusCode)
+                    completion(
+                        .failure(
+                            NSError(
+                                domain: "DownloadManager", code: statusCode,
+                                userInfo: [NSLocalizedDescriptionKey: description])))
+                },
+                waiting: { message in
+                    download.message = message
+                    waiting?(message)
+                }
+            )
+            onStart?(download.task)
+            download.task?.resume()
+        }
+    }
+
     private func aptEncoded(string: String, isArch: Bool) -> String {
         var encodedString = string.replacingOccurrences(of: "_", with: "%5f")
         encodedString = encodedString.replacingOccurrences(of: ":", with: "%3a")
@@ -777,8 +876,7 @@ final class DownloadManager {
             return .uninstallations
         } else if upgrades.contains(where: { $0.package.package == package }) {
             return .upgrades
-        } else if installdeps.contains(where: { $0.package.package == package })
-        {
+        } else if installdeps.contains(where: { $0.package.package == package }) {
             return .installdeps
         } else if uninstalldeps.contains(where: {
             $0.package.package == package
@@ -926,8 +1024,7 @@ final class DownloadManager {
         )
     }
 
-    public func deregister(downloadOverrideProvider: DownloadOverrideProviding)
-    {
+    public func deregister(downloadOverrideProvider: DownloadOverrideProviding) {
         for keyVal in repoDownloadOverrideProviders {
             repoDownloadOverrideProviders[keyVal.key]?.remove(
                 downloadOverrideProvider.hashableObject

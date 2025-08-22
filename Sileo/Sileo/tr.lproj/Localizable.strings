@@ -1,3 +1,6 @@
+// Download DEB / Copy URL (English text per request)
+"Copy_DEB_URL" = "Copy DEB URL";
+"Downloading_Ellipsis" = "Downloading…";
 /* 
   Localizable.strings
   Sileo

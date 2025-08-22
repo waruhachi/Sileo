@@ -42,6 +42,10 @@
 "Download_Starting" = "Starting…";
 "Download_Progress" = "%@ of %@"; // first %@ = amount downloaded, second %@ = total to download
 
+// Download DEB / Copy URL
+"Copy_DEB_URL" = "Copy DEB URL";
+"Downloading_Ellipsis" = "Downloading…";
+
 "Queue_Confirm_Button" = "Confirm";
 "Queue_Clear_Button" = "Clear Queue";
 

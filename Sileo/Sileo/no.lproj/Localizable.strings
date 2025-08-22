@@ -1,3 +1,6 @@
+// Download DEB / Copy URL
+"Copy_DEB_URL" = "Copy DEB URL";
+"Downloading_Ellipsis" = "Downloading…";
 /* 
   Localizable.strings
   Sileo
@@ -43,6 +46,10 @@
 "Removal_Queued_Package_Status" = "Lagt til i køen for fjerning";
 "Download_Starting" = "Starter…";
 "Download_Progress" = "%@ av %@"; // first %@ = amount downloaded, second %@ = total to download
+
+// Download DEB / Copy URL
+"Copy_DEB_URL" = "Copy DEB URL";
+"Downloading_Ellipsis" = "Downloading…";
 
 "Essential_Warning" = "Følgende pakker er oppført som viktige/påkrevde: %@\n Hvis du fjerner disse, kan det forårsake irreversibel skade på enheten din og kan føre til at du må gjenopprette den. Fortsett kun hvis du er sikker på at du vet hva du gjør.";
 
