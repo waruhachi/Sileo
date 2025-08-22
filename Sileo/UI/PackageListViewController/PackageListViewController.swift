@@ -199,16 +199,6 @@ class PackageListViewController: SileoViewController,
             self.title = String(localizationKey: localizableTitle)
         }
 
-        if showSearchField && localizableTitle == "Search_Page" {
-            let downloadsBtn = UIBarButtonItem(
-                title: "Downloads",
-                style: .plain,
-                target: self,
-                action: #selector(self.showDownloads(_:))
-            )
-            self.navigationItem.rightBarButtonItem = downloadsBtn
-        }
-
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(self.reloadData),
@@ -598,11 +588,6 @@ class PackageListViewController: SileoViewController,
     @objc func showHistory(_ sender: Any?) {
         let vc = PackageHistoryViewController()
         self.navigationController?.pushViewController(vc, animated: true)
-    }
-
-    @objc func showDownloads(_ sender: Any?) {
-        let vc = DownloadsPageViewController()
-        navigationController?.pushViewController(vc, animated: true)
     }
 
     private func hapticResponse() {
