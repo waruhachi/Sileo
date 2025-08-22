@@ -54,7 +54,7 @@
 "Package_Cancel_Action" = "Cancel";
 "Package_Paid" = "Paid";
 
-"Package_Share_Action" = "Share Package…";
+"Package_Share_Action" = "Share Package";
 "Package_Developer_Find_Action" = "More by this Developer";
 "Package_Support_Action" = "Support";
 "Package_Hold_Enable_Action" = "Ignore Future Updates";
