@@ -1,6 +1,6 @@
 # Sileo
 [![Nightly](https://github.com/waruhachi/Sileo/actions/workflows/main.yml/badge.svg)](https://github.com/waruhachi/Sileo/actions/workflows/main.yml)
-[![Release](https://github.com/waruhachi/Sileo/actions/workflows/main.yml/badge.svg)](https://github.com/waruhachi/Sileo/actions/workflows/release.yml)
+[![Release](https://github.com/waruhachi/Sileo/actions/workflows/release.yml/badge.svg)](https://github.com/waruhachi/Sileo/actions/workflows/release.yml)
 
 A modern APT package manager frontend
 
